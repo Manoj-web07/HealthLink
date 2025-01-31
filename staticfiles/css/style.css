@@ -1,0 +1,50 @@
+body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right, #48c6ef, #6f86d6);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .role-selection-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .role-box {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .role-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .role-box img {
+            border-radius: 50%;
+        }
+
+        .role-box h3 {
+            margin: 15px 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .role-box p {
+            font-size: 0.9rem;
+        }

@@ -1,0 +1,43 @@
+{% include 'Patients/header.html' %}
+{% for appointment in appointments %}
+    <div class="col-12 col-md-4">
+        <div class="card cart shadow mb-3">
+            <div class="card-body d-flex">
+                <!-- Left: Doctor's Profile Picture -->
+                <div class="me-3">
+                    {% if appointment.doctor.profile_picture %}
+                        <img src="{{ appointment.doctor.profile_picture.url }}" alt="Profile Picture" width="100" height="100" class="rounded-circle">
+                    {% endif %}
+                </div>
+
+                <!-- Right: Appointment Details -->
+                <div>
+                    <h5 class="card-title">Appointment with Dr. {{ appointment.doctor.name }}</h5>
+                    <p class="card-text">
+                        <strong>Date:</strong> {{ appointment.appointment_date|date:"M d, Y H:i" }}<br>
+                        <strong>Status:</strong> {{ appointment.status }}<br>
+                        {% if appointment.is_virtual %}
+                            <strong>Location:</strong> Virtual (Online)
+                        {% else %}
+                            <strong>Location:</strong>
+                            {% if appointment.location_type == "Hospital" %}
+                                Hospital: {{ appointment.hospital.address|default:"Address Not Available" }}
+                            {% else %}
+                                Clinic: {{ appointment.doctor.address|default:"Address Not Available" }}
+                            {% endif %}
+                        {% endif %}
+                    </p>
+
+                    <!-- Action Buttons -->
+                    {% if appointment.status == "Scheduled" %}
+                        <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ appointment.id }}">Reschedule</a>
+                        <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ appointment.id }}">Cancel</a>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ appointment.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% include 'Patients/footer.html' %}

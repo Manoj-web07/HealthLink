@@ -1,0 +1,43 @@
+{% include 'Patients/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Profile: {{ patient.name }}</h2>
+
+    <!-- Profile Picture Section -->
+    <div class="row">
+        <div class="col-md-3">
+            {% if patient.profile_picture %}
+                <img src="{{ patient.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" width="200" height="200">
+            {% else %}
+                <i class="bi bi-person-circle" style="font-size: 200px;"></i>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h3>Personal Details</h3>
+            <ul class="list-unstyled">
+                <li><strong>Gender:</strong> {{ patient.get_gender_display }}</li>
+                <li><strong>Date of Birth:</strong> {{ patient.date_of_birth }}</li>
+                <li><strong>Blood Group:</strong> {{ patient.get_blood_group_display }}</li>
+                <li><strong>Email:</strong> {{ patient.email }}</li>
+                <li><strong>Contact Number:</strong> {{ patient.contact_number }}</li>
+                <li><strong>Address:</strong> {{ patient.address }}</li>
+            </ul>
+
+            <h3>Medical Information</h3>
+            <ul class="list-unstyled">
+                <li><strong>Allergies:</strong> {{ patient.allergies }}</li>
+                <li><strong>Weight:</strong> {{ patient.weight }} kg</li>
+                <li><strong>Height:</strong> {{ patient.height }} cm</li>
+                <li><strong>Smoking Status:</strong> {{ patient.smoking_status|yesno:"Yes,No" }}</li>
+                <li><strong>Drinking Status:</strong> {{ patient.drinking_status|yesno:"Yes,No" }}</li>
+            </ul>
+
+            <h3>Languages Spoken</h3>
+            <p>{{ patient.languages_spoken }}</p>
+        </div>
+        <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
+    </div>
+
+</div>
+
+{% include 'Patients/footer.html' %}

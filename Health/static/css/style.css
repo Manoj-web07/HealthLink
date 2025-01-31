@@ -1,0 +1,220 @@
+body {
+
+            margin: 0;
+            background: linear-gradient(to right, #48c6ef, #6f86d6);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .role-selection-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .role-box {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .role-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .role-box img {
+            border-radius: 50%;
+        }
+
+        .role-box h3 {
+            margin: 15px 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .role-box p {
+            font-size: 0.9rem;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-card .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-card .form-control {
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .login-card .form-select {
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .login-card .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: #6f86d6;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 8px rgba(48, 151, 255, 0.6);
+        }
+
+        .alert {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            display: block;
+        }
+
+        .alert-danger {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+        }
+
+        .alert-success {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #008000;
+        }
+
+        .login-card .forgot-password {
+            color: #3498db;
+            font-size: 14px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .login-card .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-card .footer-links {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .login-card .footer-links a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .login-card .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Logo styling */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+.sidebar {
+    background: linear-gradient(to right, rgba(72, 198, 239, 0.8), rgba(111, 134, 214, 0.8));
+    height: 100vh; /* Full height of the viewport */
+    position: fixed;
+    padding: 1rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease; /* Smooth transition for opening and closing */
+}
+
+/* Sidebar visibility for mobile */
+.sidebar.collapsing {
+    transform: translateX(-100%); /* Hides the sidebar on smaller screens */
+}
+
+.sidebar.show {
+    transform: translateX(0); /* Show the sidebar on smaller screens */
+}
+
+        .sidebar .logo {
+            width: 100%;
+        }
+
+        .sidebar h2 {
+            font-size: auto;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .sidebar .nav-link {
+            font-weight: auto;
+            margin-bottom: 0.5rem;
+            border-radius: 0.4rem;
+            color: white;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Navbar */
+        .navbar {
+    background: linear-gradient(to right, #48c6ef, #6f86d6);
+    color: white;
+    width: 100%;
+    position: sticky;
+    top: 0; /* Ensures the navbar sticks to the top */
+    z-index: 1000; /* Ensures the navbar stays above other content */
+}
+
+        .navbar-brand {
+            color: white !important;
+        }
+
+        .navbar .dropdown-item {
+            color: #333;
+        }
+        .cart {
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cart .card-title {
+            font-size: 1.2rem;
+            color: #007bff;
+        }
+

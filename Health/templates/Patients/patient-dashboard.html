@@ -1,0 +1,92 @@
+{% include 'Patients/header.html' %}
+<!-- Overview Section -->
+<div class="container">
+    <h2 class="mb-4">Dashboard Overview</h2>
+    <div class="row g-4">
+        <!-- Appointments -->
+        <div class="col-12 col-md-4">
+            <div class="card cart shadow text-center bg-light shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-calendar-check display-4"></i></h5>
+                    <p class="card-text">You have <strong>{{ appointments.count }}</strong> upcoming appointments.</p>
+                    <a href="{% url 'patient_appointments' %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical History -->
+        <div class="col-12 col-md-4">
+            <div class="card cart shadow text-center bg-light shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-journal-medical display-4"></i></h5>
+                    <p class="card-text">You have <strong>{{ past_appointments_count }}</strong> past appointments.</p>
+                    <a href="#" class="btn btn-primary">View Records</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Track Health -->
+        <div class="col-12 col-md-4">
+            <div class="card cart shadow text-center bg-light shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-bar-chart-line display-4"></i></h5>
+                    <h5>Weight: {{ patient.weight }} kg</h5>
+                    <h5>Height: {{ patient.height }} cm</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Daily Features -->
+    <div class="row g-4 mt-4 mb-3">
+        <!-- Today's Medications -->
+        <div class="col-12 col-md-4">
+            <div class="card cart shadow text-center bg-light shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-capsule display-4"></i></h5>
+                    <h4 class="card-text">Running Treatments</h4>
+                    <p>Here are your current treatments:</p>
+                    {% if running_treatments %}
+                    <ul class="list-group">
+                        {% for treatment in running_treatments %}
+                        <li class="list-group-item">
+                            <strong>{{ treatment.doctor.name }}</strong> - <strong>{{ treatment.name }}</strong><br>
+                            <span>Start Date: {{ treatment.start_date }}</span><br>
+                            <span>End Date: {{ treatment.end_date }}</span><br>
+                            <span>Status: {{ treatment.status }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No active treatments at the moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Health Tip -->
+        <div class="col-12 col-md-4">
+            <div class="card cart text-center shadow bg-info text-white shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-lightbulb display-4"></i></h5>
+                    <p class="card-text">{{ daily_tip }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="col-12 col-md-4">
+            <div class="card cart text-center shadow bg-warning text-dark shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-bell display-4"></i></h5>
+                    {% if notifications %}
+                    <p>You have {{ notifications.count }} new notifications.</p>
+                    {% else %}
+                    <p>No new notifications at the moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'Patients/footer.html' %}

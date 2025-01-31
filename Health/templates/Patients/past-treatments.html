@@ -1,0 +1,42 @@
+{% include 'Patients/header.html' %}
+<!-- Main Content -->
+<!-- Past Treatments Section -->
+<div class="container">
+    <h2 class="mb-4">Past Treatments</h2>
+    <div class="row g-4">
+        {% if past_treatments %}
+            {% for treatment in past_treatments %}
+                <div class="col-12 col-md-6">
+                    <div class="card cart shadow mb-3">
+                        <div class="card-body d-flex">
+                            <!-- Left Side: Doctor's Profile Picture -->
+                            <div class="me-3">
+                                <img src="{{ treatment.doctor.profile_picture.url }}" alt="Doctor Profile Picture" width="80" height="80" class="rounded-circle">
+                            </div>
+                            <!-- Right Side: Treatment Details -->
+                            <div>
+                                <h5 class="card-title">Treatment: {{ treatment.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Doctor:</strong> Dr. {{ treatment.doctor.name }}<br>
+                                    <strong>Start Date:</strong> {{ treatment.start_date|date:"M d, Y" }}<br>
+                                    <strong>End Date:</strong> {{ treatment.end_date|date:"M d, Y" }}<br>
+                                    <strong>Status:</strong> {{ treatment.status }}<br>
+                                    <strong>Description:</strong> {{ treatment.description }}<br>
+                                    {% if treatment.is_active %}
+                                        <span class="badge bg-success">Ongoing</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Completed</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No past treatments found.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'Patients/footer.html' %}

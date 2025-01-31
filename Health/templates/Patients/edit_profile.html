@@ -1,0 +1,117 @@
+{% include 'Patients/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Feedback Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <!-- Profile Picture Section -->
+       <div class="col-md-4 text-center">
+    <!-- Profile Picture or Icon -->
+    <label for="profile_picture" style="cursor: pointer;">
+        {% if patient.profile_picture %}
+            <img src="{{ patient.profile_picture.url }}"
+                 alt="Profile Picture"
+                 class="img-thumbnail mb-3 rounded-circle profile-img"
+                 width="200"
+                 height="200">
+        {% else %}
+            <i class="bi bi-person-circle"
+               style="font-size: 200px; color: #ccc;"></i>
+        {% endif %}
+    </label>
+
+    <!-- Hidden File Input -->
+    <input type="file"
+           class="form-control d-none"
+           id="profile_picture"
+           name="profile_picture"
+           accept="image/*">
+
+    <label for="profile_picture" class="form-label mt-3 d-none">Profile Picture</label>
+</div>
+
+<style>
+    .profile-img {
+        object-fit: cover; /* Ensures the image covers the entire circle */
+        width: 200px;
+        height: 200px;
+        border-radius: 50%; /* Perfect circle */
+        object-position: top center; /* Align the image at the top */
+    }
+</style>
+
+
+            <!-- Profile Details Section -->
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ patient.name }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-control" id="gender" name="gender">
+                        <option value="M" {% if patient.gender == 'M' %}selected{% endif %}>Male</option>
+                        <option value="F" {% if patient.gender == 'F' %}selected{% endif %}>Female</option>
+                        <option value="O" {% if patient.gender == 'O' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ patient.date_of_birth }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="contact_number" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ patient.contact_number }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ patient.email }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea class="form-control" id="address" name="address">{{ patient.address }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="languages_spoken" class="form-label">Languages Spoken</label>
+                    <input type="text" class="form-control" id="languages_spoken" name="languages_spoken" value="{{ patient.languages_spoken }}">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="smoking_status" name="smoking_status" {% if patient.smoking_status %}checked{% endif %}>
+                            <label for="smoking_status" class="form-check-label">Smoking</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="drinking_status" name="drinking_status" {% if patient.drinking_status %}checked{% endif %}>
+                            <label for="drinking_status" class="form-check-label">Drinking</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>p
+{% include 'Patients/footer.html' %}
