@@ -11,9 +11,12 @@ class Review(models.Model):
     comment = models.TextField(blank=True, null=True)  # Optional comment
     created_at = models.DateTimeField(auto_now_add=True)  # When the review was created
     updated_at = models.DateTimeField(auto_now=True)  # When the review was last updated
+    read = models.BooleanField(default=False)
+    class Meta:
+        unique_together = ('doctor', 'patient')  # Ensures a patient can review a doctor only once
 
     def __str__(self):
-        return f"Review for Dr. {self.doctor.name} by {self.patient.username}"
+        return f"Review for Dr. {self.doctor.name} by {self.patient.name}"
 
     # Custom validation to ensure rating is between 1 and 5
     def clean(self):
@@ -21,9 +24,10 @@ class Review(models.Model):
             raise ValidationError("Rating must be between 1 and 5.")
 
     # Optionally, we can add a method to calculate the average rating for a doctor
-    @property
-    def average_rating(self):
-        reviews = self.doctor.reviews.all()
+    @staticmethod
+    def get_average_rating(doctor):
+        reviews = doctor.reviews.all()
         total_rating = sum(review.rating for review in reviews)
         return total_rating / len(reviews) if reviews else 0
+
 

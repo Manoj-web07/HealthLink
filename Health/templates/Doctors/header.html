@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HealthLink{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Optional: FontAwesome for additional icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    {% load static %}
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Popper.js and Bootstrap JS (Optional but Recommended) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-lg-2 col-md-3 sidebar shadow bg-light collapse d-md-block" id="sidebarMenu">
+                <img src="{% static 'image/logo.png' %}" alt="HealthLink Logo" class="logo">
+                <hr class="text-dark">
+                <h3>Doctor Panel</h3>
+                <ul class="nav nav-pills flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'doctor-dashboard' %}active{% endif %}"
+                           href="{% url 'doctor_dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'appointments' %}active{% endif %}"
+                           href="{% url 'appointments_view' %}">
+                            <i class="bi bi-calendar-event"></i> Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'rescheduled_appointments' %}active{% endif %}"
+                           href="{% url 'rescheduled_appointments_view' %}">
+                            <i class="bi bi-calendar-check"></i> Reschedule Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+    <a class="nav-link text-dark {% if active_page == 'appointment-records' %}active{% endif %}"
+       href="{% url 'completed_appointments' %}">
+        <i class="bi bi-clock-history"></i> Appointment Records
+    </a>
+</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'my-patients' %}active{% endif %}"
+                           href="{% url 'my_patients' %}">
+                            <i class="bi bi-person-fill"></i> My Patients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'running_treatments' %}active{% endif %}"
+                           href="{% url 'running_treatments' %}">
+                            <i class="bi bi-capsule"></i> Treatments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'treatments-records' %}active{% endif %}"
+                           href="{% url 'past_treatments' %}">
+                            <i class="bi bi-journal-text"></i> Treatments Records
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle {% if active_page == 'settings' %}active{% endif %}"
+                           id="settingsDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear"></i> Settings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'doctor_profile' doctor.id %}"><i class="bi bi-person"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'change_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
+                            <li>
+                                <form method="POST" action="#">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item text-danger" type="submit">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <hr class="text-dark">
+            </nav>
+
+            <!-- Main Content -->
+            <div class="col-sm-10 offset-sm-2">
+                <!-- Navbar -->
+                <nav class="navbar navbar-light shadow mb-4">
+                    <div class="container-fluid">
+                        <button class="btn btn-primary d-md-none mb-3" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#sidebarMenu" aria-expanded="false" aria-controls="sidebarMenu">
+                            <i class="bi bi-list"></i>
+                        </button>
+
+                        <span class="navbar-brand">Dr. {{ doctor.name }}</span>
+
+                        <!-- User Profile Dropdown -->
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-white text-decoration-none"
+                               id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if doctor.profile_picture %}
+                                    <img src="{{ doctor.profile_picture.url }}" alt="Profile Picture" width="45"
+                                         height="45" class="rounded-circle">
+                                {% else %}
+                                    <i class="bi bi-person-circle" style="font-size: 40px;"></i>
+                                {% endif %}
+                            </a>
+
+                            <!-- Dropdown Menu -->
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                                <li><a class="dropdown-item" href="{% url 'doctor_profile' doctor.id %}"><i class="bi bi-person"></i> Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'change_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
+                                <li>
+                                    <form method="POST" action="#">
+                                        {% csrf_token %}
+                                        <button class="dropdown-item text-danger" type="submit">
+                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>

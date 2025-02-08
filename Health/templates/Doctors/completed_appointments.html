@@ -1,0 +1,31 @@
+{% include 'Doctors/header.html' %}
+
+<div class="container mt-4">
+    <h3>Completed Appointments</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Patient</th>
+                <th>Appointment Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in completed_appointments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ appointment.patient.name }}</td>
+                    <td>{{ appointment.appointment_date|date:"F j, Y, g:i a" }}</td>
+                    <td><span class="badge bg-secondary">Completed</span></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No completed appointments found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'Doctors/footer.html' %}

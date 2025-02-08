@@ -1,0 +1,104 @@
+{% include 'Doctors/header.html' %}
+
+<div class="container mt-4">
+
+    <!-- Overview Section -->
+    <div class="row">
+        <!-- Appointments Card -->
+        <div class="col-md-4">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-calendar-check"></i> Appointments</h5>
+                    <p>You have <strong>{{ upcoming_appointments }}</strong> appointments today.</p>
+                    <a href="{% url 'appointments_view' %}" class="btn btn-success">View</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Patients Card -->
+        <div class="col-md-4">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-user-plus"></i> New Patients</h5>
+                    <p><strong>{{ new_patients }}</strong> new patient registrations.</p>
+
+                    <a href="{% url 'my_patients' %}" class="btn btn-success">Details</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Overview Card -->
+        <div class="col-md-4">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-user-md"></i> Profile Overview</h5>
+                    <p>Review and update your profile details.</p>
+                    <a href="{% url 'doctor_profile' doctor.id %}" class="btn btn-success">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Reviews Section -->
+    <h3 class="mt-5">Doctor Reviews</h3>
+    <div class="row">
+        <!-- Average Rating Card -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-star"></i> Average Rating</h5>
+                    <p class="display-5">{{ average_rating }} / 5</p>
+                    <p class="text-muted">Based on <strong>{{ review_count }}</strong> reviews</p>
+                </div>
+            </div>
+        <h4 class="mt-5">Patient Comments</h4>
+<div class="list-group">
+    {% for review in patient_comments %}
+        <div class="list-group-item">
+            <h5 class="mb-1">{{ review.patient__name }}</h5> <!-- Patient's name -->
+            <p class="mb-1"><strong>Comment:</strong> {{ review.comment }}</p>
+            <small class="text-muted">Reviewed on: {{ review.created_at|date:"F j, Y" }}</small> <!-- Display review date -->
+        </div>
+    {% empty %}
+        <p>No reviews available.</p> <!-- Message if no reviews are available -->
+    {% endfor %}
+</div>
+        </div>
+
+        <!-- Rating Distribution Chart -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-chart-pie"></i> Rating Distribution</h5>
+                    <canvas id="ratingChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js for Rating Distribution -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ratingData = JSON.parse('{{ rating_distribution_json|safe }}');
+
+    var ctx = document.getElementById("ratingChart").getContext("2d");
+    var ratingChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["5 Stars", "4 Stars", "3 Stars", "2 Stars", "1 Star"],
+            datasets: [{
+                data: [
+                    ratingData["5 Stars"] || 0,
+                    ratingData["4 Stars"] || 0,
+                    ratingData["3 Stars"] || 0,
+                    ratingData["2 Stars"] || 0,
+                    ratingData["1 Star"] || 0
+                ],
+                backgroundColor: ["green", "yellowgreen", "yellow", "orange", "red"],
+            }]
+        }
+    });
+</script>
+
+{% include 'Doctors/footer.html' %}

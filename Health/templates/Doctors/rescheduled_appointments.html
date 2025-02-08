@@ -1,0 +1,33 @@
+{% include 'Doctors/header.html' %}
+
+<div class="container mt-4">
+    <h3>Rescheduled Appointments</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Patient</th>
+                <th>Original Date</th>
+                <th>New Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in rescheduled_appointments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ appointment.patient.name }}</td> <!-- Patient Name -->
+                    <td>{{ appointment.original_date|date:"F j, Y, g:i a" }}</td> <!-- Original Appointment Date -->
+                    <td>{{ appointment.appointment_date|date:"F j, Y, g:i a" }}</td> <!-- New Rescheduled Date -->
+                    <td><span class="badge bg-warning">Rescheduled</span></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No rescheduled appointments.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'Doctors/footer.html' %}

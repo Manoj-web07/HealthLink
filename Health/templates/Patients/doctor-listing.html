@@ -1,51 +1,164 @@
 {% include 'Patients/header.html' %}
-<form action="/book-appointment" method="POST">
-  <!-- Step 1: Treatment Type -->
-  <label>Select Treatment Type:</label><br>
-  <input type="radio" id="ayurveda" name="treatment" value="ayurveda" required>
-  <label for="ayurveda">Ayurveda</label><br>
-  <input type="radio" id="homeopathy" name="treatment" value="homeopathy">
-  <label for="homeopathy">Homeopathy</label><br><br>
 
-  <!-- Step 2: Problem -->
-  <label for="problem">Select Problem (Disease):</label><br>
-  <select id="problem" name="problem" required>
-    <option value="diabetes">Diabetes</option>
-    <option value="hypertension">Hypertension</option>
-    <option value="arthritis">Arthritis</option>
-    <!-- Add more options here -->
-  </select><br><br>
+<div class="container text-dark mt-4">
+    <h2 class="text-center mb-4">Find a Doctor</h2>
 
-  <!-- Step 3: City -->
-  <label for="city">Select City:</label><br>
-  <input type="text" id="city" name="city" placeholder="Enter city" required>
-  <input type="checkbox" id="nearby" name="nearby">
-  <label for="nearby">Show Nearby Hospitals</label><br><br>
+    <!-- Error Message -->
+    {% if error %}
+        <div class="alert alert-danger text-center">{{ error }}</div>
+    {% endif %}
 
-  <!-- Step 4: Date -->
-  <label for="date">Select Date:</label><br>
-  <input type="date" id="date" name="date" required><br><br>
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'doctor_listing' %}" class="p-4 border rounded shadow-sm bg-light" id="searchForm">
+        {% csrf_token %}
 
-  <!-- Submit -->
-  <button type="submit">Search Available Doctors</button>
-</form>
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
 
-<!-- Google Maps integration (optional) -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
+        <div class="mb-3">
+            <label for="search_by" class="form-label">Search By:</label>
+            <select id="search_by" name="search_by" class="form-select">
+                <option value="hospital" {% if search_by == 'hospital' %}selected{% endif %}>Hospital</option>
+                <option value="doctor" {% if search_by == 'doctor' %}selected{% endif %}>Doctor</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="treatment" class="form-label">Treatment Type:</label>
+            <select name="treatment" id="treatment" class="form-select">
+                <option value="">Select Treatment</option>
+                {% for treatment in treatments %}
+                    <option value="{{ treatment }}" {% if selected_treatment == treatment %}selected{% endif %}>{{ treatment }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="disease" class="form-label">Disease:</label>
+            <select name="disease" id="disease" class="form-select">
+                <option value="">Select Disease</option>
+                {% for disease in diseases %}
+                    <option value="{{ disease }}" {% if selected_disease == disease %}selected{% endif %}>{{ disease }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="city" class="form-label">Select City:</label>
+            <select name="city" id="city" class="form-select" onchange="toggleNearby(this)">
+                <option value="">Select City</option>
+                {% for city in cities %}
+                    <option value="{{ city.name }}" {% if selected_city == city.name %}selected{% endif %}>{{ city.name }}</option>
+                {% endfor %}
+                <option value="nearby" {% if selected_city == 'nearby' %}selected{% endif %}>Find Nearby Locations</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div class="mt-4">
+        {% if doctors or hospitals %}
+            {% if search_by == 'hospital' %}
+                <h4>Hospitals</h4>
+                {% if hospitals %}
+                    <div class="row">
+                        {% for hospital in hospitals %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                                            {% if hospital.profile_picture %}
+                                                <img src="{{ hospital.profile_picture.url }}" class="img-fluid rounded" alt="{{ hospital.name }}" style="max-height: 200px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="https://via.placeholder.com/180" class="card-img" alt="No Image Available">
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ hospital.name }}</h5>
+                                                <p class="card-text"><strong>City:</strong> {{ hospital.city.name }}</p>
+                                                <p class="card-text"><strong>Address:</strong> {{ hospital.address }}</p>
+                                                <p class="card-text"><strong>Type:</strong> {{ hospital.get_hospital_type_display }}</p>
+
+                                                {% if hospital.rating %}
+                                                    <p class="card-text"><strong>Rating:</strong> ⭐ {{ hospital.rating }}/5</p>
+                                                {% else %}
+                                                    <p class="card-text"><strong>Rating:</strong> Not yet rated</p>
+                                                {% endif %}
+
+                                                <a href="{% url 'hospital_detail' hospital.id %}" class="btn btn-info btn-sm">View</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-danger">No hospitals found.</p>
+                {% endif %}
+            {% else %}
+                <h4>Doctors</h4>
+                <div class="row">
+                    {% for doctor in doctors %}
+                        <div class="col-md-6">
+                            <div class="card shadow-sm mb-4">
+                                <div class="row no-gutters">
+                                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                                        {% if doctor.profile_picture %}
+                                            <img src="{{ doctor.profile_picture.url }}" class="img-fluid rounded" alt="Dr. {{ doctor.name }}" style="max-height: 200px; object-fit: cover;">
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/180" class="img-fluid rounded" alt="No Image Available">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Dr. {{ doctor.name }} ⭐ {{ doctor.rating }}/5</h5>
+                                            <p class="card-text"><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+                                            <p class="card-text"><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+
+                                            <a href="{% url 'doctor_detail' doctor.id %}" class="btn btn-info btn-sm">View</a>
+                                            <a href="#" class="btn btn-primary btn-sm">Book Appointment</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-center">No doctors found.</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-center text-muted">No results found.</p>
+        {% endif %}
+    </div>
+</div>
+
 <script>
-  function initMap() {
-    const input = document.getElementById('city');
-    const autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.setFields(['place_id', 'geometry', 'name']);
+    function autoFillLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById("latitude").value = position.coords.latitude;
+                document.getElementById("longitude").value = position.coords.longitude;
+                document.getElementById("searchForm").submit();
+            }, function() {
+                alert("Unable to retrieve your location.");
+            });
+        } else {
+            alert("Geolocation is not supported.");
+        }
+    }
 
-    autocomplete.addListener('place_changed', function() {
-      const place = autocomplete.getPlace();
-      if (!place.geometry) {
-        return;
-      }
-      // You can use place.geometry.location.lat() and place.geometry.location.lng() to get the lat/lng of the selected city
-    });
-  }
+    function toggleNearby(selectElement) {
+        if (selectElement.value === "nearby") {
+            autoFillLocation();
+        }
+    }
 </script>
 
 {% include 'Patients/footer.html' %}

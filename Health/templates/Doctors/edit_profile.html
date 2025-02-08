@@ -1,0 +1,126 @@
+{% include 'Doctors/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Feedback Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <!-- Profile Picture Section -->
+            <div class="col-md-4 text-center">
+                <label for="profile_picture" style="cursor: pointer;">
+                    {% if doctor.profile_picture %}
+                        <img src="{{ doctor.profile_picture.url }}"
+                             alt="Profile Picture"
+                             class="img-thumbnail mb-3 rounded-circle profile-img"
+                             width="200"
+                             height="200">
+                    {% else %}
+                        <i class="bi bi-person-circle"
+                           style="font-size: 200px; color: #ccc;"></i>
+                    {% endif %}
+                </label>
+
+                <!-- Hidden File Input -->
+                <input type="file"
+                       class="form-control d-none"
+                       id="profile_picture"
+                       name="profile_picture"
+                       accept="image/*">
+
+                <label for="profile_picture" class="form-label mt-3 d-none">Profile Picture</label>
+            </div>
+
+            <style>
+                .profile-img {
+                    object-fit: cover;
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    object-position: top center;
+                }
+            </style>
+
+            <!-- Profile Details Section -->
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ doctor.name }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-control" id="gender" name="gender">
+                        <option value="M" {% if doctor.gender == 'M' %}selected{% endif %}>Male</option>
+                        <option value="F" {% if doctor.gender == 'F' %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="contact_number" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ doctor.contact_number }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ doctor.email }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea class="form-control" id="address" name="address">{{ doctor.address }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ doctor.city }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="specialty" class="form-label">Specialty</label>
+                    <input type="text" class="form-control" id="specialty" name="specialty" value="{{ doctor.specialty }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="qualification" class="form-label">Qualifications</label>
+                    <input type="text" class="form-control" id="qualification" name="qualification" value="{{ doctor.qualification }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="experience_years" class="form-label">Experience (Years)</label>
+                    <input type="number" class="form-control" id="experience_years" name="experience_years" value="{{ doctor.experience_years }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="about" class="form-label">About</label>
+                    <textarea class="form-control" id="about" name="about" rows="4">{{ doctor.about }}</textarea>
+                </div>
+
+                <h3>Diseases Treated</h3>
+                    <div class="form-check">
+                        {% for disease in diseases %}
+                            <input type="checkbox" name="diseases" value="{{ disease.id }}" 
+                                   id="disease_{{ disease.id }}" class="form-check-input"
+                                   {% if disease in doctor.diseases.all %}checked{% endif %}>
+                            <label for="disease_{{ disease.id }}" class="form-check-label">{{ disease.name }}</label><br>
+                        {% endfor %}
+                    </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4 mb-2">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+{% include 'Doctors/footer.html' %}

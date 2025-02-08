@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Appointment
-from .models import Hospital, Department, Staff, Patient, DayOfWeek, Doctor, HospitalFeedback, Language, Shift, Review, Facility, Disease, Treatment
+from .models import Hospital, Department, Staff, Patient, DayOfWeek, Doctor, HospitalFeedback, Language, Shift, Review, Facility, Disease, Treatment,City
 
 # Register your models here.
 
@@ -26,7 +26,7 @@ admin.site.register(Appointment, AppointmentAdmin)
 
 class DoctorAdmin(admin.ModelAdmin):
     list_display = ('name', 'specialty', 'hospital', 'city', 'experience_years', 'consultation_type', 'is_active')
-    list_filter = ('treatment_type', 'city', 'hospital', 'is_active')
+    list_filter = ('treatment_type', 'hospital', 'is_active')
     search_fields = ('name', 'specialty', 'hospital__name', 'email', 'city',)
     ordering = ('name',)
     filter_horizontal = ('diseases', 'languages_spoken', 'days_available')
@@ -42,15 +42,19 @@ class DoctorAdmin(admin.ModelAdmin):
             'fields': ('availability_start_time', 'availability_end_time', 'days_available')
         }),
         ('System Information', {
-            'fields': ('is_active', 'created_at', 'updated_at')
+            'fields': ('password', 'is_active', 'created_at', 'updated_at')
         }),
     )
 
-    readonly_fields = ('created_at', 'updated_at')  # Prevents editing timestamps
+    readonly_fields = ('created_at', 'updated_at')  # Makes the timestamps read-only
 
     def get_queryset(self, request):
         """Optimize queries by prefetching related fields."""
         return super().get_queryset(request).select_related('hospital').prefetch_related('languages_spoken', 'diseases', 'days_available')
+
+    def password(self, obj):
+        """Display password as a secure field (hashed version)."""
+        return obj.password if obj.password else "Not Set"
 
 # Register the models with the Django admin
 admin.site.register(Doctor, DoctorAdmin)
@@ -143,3 +147,8 @@ class TreatmentAdmin(admin.ModelAdmin):
     search_fields = ('patient__name', 'doctor__name', 'name')
 
 admin.site.register(Treatment, TreatmentAdmin)
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)

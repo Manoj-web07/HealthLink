@@ -1,0 +1,37 @@
+{% include 'Doctors/header.html' %}
+{% block content %}
+    <div class="container mt-4">
+        <h3>Past Treatments</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient</th>
+                    <th>Treatment Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for treatment in past_treatments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ treatment.patient.name }}</td> <!-- Patient's Name -->
+                        <td>{{ treatment.name }}</td> <!-- Treatment Name -->
+                        <td>{{ treatment.start_date|date:"F j, Y" }}</td> <!-- Start Date -->
+                        <td>{{ treatment.end_date|date:"F j, Y" }}</td> <!-- End Date -->
+                        <td>
+                            <span class="badge bg-success">Completed</span>  <!-- Treatment Status -->
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No completed treatments.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% include 'Doctors/footer.html' %}

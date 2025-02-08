@@ -2,6 +2,8 @@ import requests
 from django.db import models
 from django.core.exceptions import ValidationError
 from .facility import Facility
+from .city import City
+from .department import Department
 
 
 class Hospital(models.Model):
@@ -21,8 +23,9 @@ class Hospital(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     password = models.CharField(max_length=128)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
     # Relationship with Departments
-    departments = models.ManyToManyField('Department', blank=True, related_name='hospitals')
+    departments = models.ManyToManyField(Department, blank=True, related_name='hospitals')
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     # Facilities offered by the hospital
@@ -36,17 +39,20 @@ class Hospital(models.Model):
     def _get_coordinates_from_address(self):
         """Fetch latitude & longitude using OpenStreetMap (Nominatim)."""
         url = f"https://nominatim.openstreetmap.org/search?q={self.address}&format=json"
-        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+        try:
+            response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+            response.raise_for_status()  # Raises an HTTPError for bad responses
 
-        if response.status_code == 200:
             data = response.json()
             if data:
                 self.latitude = float(data[0]['lat'])
                 self.longitude = float(data[0]['lon'])
             else:
                 raise ValidationError(f"Could not find coordinates for: {self.address}")
-        else:
-            raise ValidationError(f"Error fetching location: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            raise ValidationError(f"Error fetching location: {str(e)}")
+        except ValueError as e:
+            raise ValidationError(f"Invalid response data: {str(e)}")
 
     def __str__(self):
         return self.name

@@ -12,3 +12,4 @@ from .disease import Disease
 from .language import Language
 from .facility import Facility
 from .treatment import Treatment
+from .city import City

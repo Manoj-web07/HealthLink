@@ -1,0 +1,89 @@
+{% include 'Patients/header.html' %}
+
+<div class="container text-dark mt-4">
+    <h2 class="text-center">{{ hospital.name }}</h2>
+    <div class="card shadow-sm p-3 mb-4">
+        <div class="row">
+            <!-- Hospital Image -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center">
+                {% if hospital.profile_picture %}
+                    <img src="{{ hospital.profile_picture.url }}" class="img-fluid rounded" alt="{{ hospital.name }}" style="max-height: 250px; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/250" class="img-fluid rounded" alt="No Image Available">
+                {% endif %}
+            </div>
+            <!-- Hospital Details -->
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p><strong>City:</strong> {{ hospital.city.name }}</p>
+                    <p><strong>Address:</strong> {{ hospital.address }}</p>
+                    <p><strong>Type:</strong> {{ hospital.get_hospital_type_display }}</p>
+                    
+                    {% if hospital.rating %}
+                        <p><strong>Rating:</strong> ⭐ {{ hospital.rating }}/5</p>
+                    {% else %}
+                        <p><strong>Rating:</strong> Not yet rated</p>
+                    {% endif %}
+
+                    <!-- Facilities -->
+                    {% if hospital.hospital_facilities.all %}
+                        <p><strong>Facilities:</strong></p>
+                        <ul>
+                            {% for facility in hospital.hospital_facilities.all %}
+                                <li>{{ facility.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p><strong>Facilities:</strong> No facilities listed</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctors Section -->
+    <h4 class="text-center mt-4">Doctors Available</h4>
+    <div class="row">
+        {% for doctor in doctors %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="row no-gutters">
+                        <!-- Doctor Image -->
+                        <div class="col-md-4 d-flex align-items-center justify-content-center p-2">
+                            {% if doctor.profile_picture %}
+                                <img src="{{ doctor.profile_picture.url }}" class="img-fluid rounded" alt="Dr. {{ doctor.name }}" style="max-height: 150px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="No Image Available">
+                            {% endif %}
+                        </div>
+
+                        <!-- Doctor Details -->
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">Dr. {{ doctor.name }}</h5>
+                                <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+                                <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+
+                                {% if doctor.rating %}
+                                    <p><strong>Rating:</strong> ⭐ {{ doctor.rating }}/5</p>
+                                {% else %}
+                                    <p><strong>Rating:</strong> Not yet rated</p>
+                                {% endif %}
+
+                                <!-- View Profile Button -->
+                                <a href="{% url 'doctor_detail' doctor.id %}" class="btn btn-info btn-sm">View Profile</a>
+
+                                <!-- Book Appointment Button -->
+                                <a href="#" class="btn btn-primary btn-sm">Book Appointment</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-muted">No doctors available at this hospital.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% include 'Patients/footer.html' %}

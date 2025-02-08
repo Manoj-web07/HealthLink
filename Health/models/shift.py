@@ -1,6 +1,5 @@
 from django.db import models
 from .staff import Staff
-
 class Shift(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     shift_type = models.CharField(max_length=20, choices=[

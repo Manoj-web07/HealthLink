@@ -1,0 +1,41 @@
+{% include 'Doctors/header.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h3>Running Treatments</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient</th>
+                    <th>Treatment Name</th>
+                    <th>Start Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for treatment in running_treatments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ treatment.patient.name }}</td> <!-- Patient's Name -->
+                        <td>{{ treatment.name }}</td> <!-- Treatment Name -->
+                        <td>{{ treatment.start_date|date:"F j, Y" }}</td> <!-- Start Date -->
+                        <td>
+                            <span class="badge bg-primary">Running</span>  <!-- Treatment Status -->
+                        </td>
+                        <td>
+                            <!-- End Treatment Button -->
+                            <a href="{% url 'end_treatment' treatment.id %}" class="btn btn-danger btn-sm">End Treatment</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No running treatments.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% include 'Doctors/footer.html' %}

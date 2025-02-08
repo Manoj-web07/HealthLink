@@ -1,8 +1,14 @@
 from django.db import models
 from .hospital import Hospital
+from .disease import Disease
 
 
 class Doctor(models.Model):
+    TREATMENT_CHOICES = [
+        ('ayurveda', 'Ayurveda'),
+        ('homeopathy', 'Homeopathy'),
+        ('allopathy', 'Allopathy'),
+    ]
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
@@ -33,9 +39,9 @@ class Doctor(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)  # Contact number
     email = models.EmailField(unique=True)  # Email address
     address = models.CharField(max_length=500, blank=True, null=True, help_text="Clinic or personal address")  # Clinic or hospital address
-    treatment_type = models.CharField(max_length=20, choices=[('ayurveda', 'Ayurveda'), ('homeopathy', 'Homeopathy')])
+    treatment_type = models.CharField(max_length=20, choices=TREATMENT_CHOICES)
+    password = models.CharField(max_length=128)
     city = models.CharField(max_length=100, blank=True, null=True)
-    password = models.CharField(max_length=128)  # Consider using Django’s User model for password handling
     consultation_type = models.CharField(max_length=10, choices=CONSULTATION_TYPES, default='Both')  # Consultation type
     availability_start_time = models.TimeField(blank=True, null=True)  # Start time of daily availability
     availability_end_time = models.TimeField(blank=True, null=True)  # End time of daily availability
@@ -48,7 +54,7 @@ class Doctor(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)  # Record creation time
     updated_at = models.DateTimeField(auto_now=True)  # Record last updated time
     hospital = models.ForeignKey(Hospital, on_delete=models.SET_NULL, blank=True, null=True, related_name='doctors')
-    diseases = models.ManyToManyField('Disease', related_name='doctors')
+    diseases = models.ManyToManyField(Disease, related_name='doctors')
 
     def __str__(self):
         return f"Dr. {self.name} - {self.specialty}"

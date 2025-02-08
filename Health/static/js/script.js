@@ -99,3 +99,28 @@ var swiper = new Swiper('.swiper-container', {
                 }
             }
         });
+
+<script>
+    function toggleNearby(select) {
+        if (select.value === 'nearby') {
+            // Optionally, show some additional UI for location fetching, like a loading spinner
+            autoFillNearby();  // Call your function to fill location automatically
+        }
+    }
+
+    function autoFillNearby() {
+        // This function should get the user's current location using Geolocation API or similar method
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                // Set the latitude and longitude fields with user's coordinates
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+                // Optionally, submit the form or trigger additional actions
+                document.querySelector('form').submit();
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+</script>
+
