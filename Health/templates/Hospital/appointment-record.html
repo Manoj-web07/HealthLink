@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+<h2 class="mb-4">Completed Appointments</h2>
+
+<!-- Search Form -->
+<form method="GET" action="" class="mb-3">
+    <div class="input-group">
+        <input type="text" class="form-control" name="search" placeholder="Search by Patient Name" value="{{ request.GET.search }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Doctor</th>
+                <th>Appointment Date</th>
+                <th>Status</th>
+                <th>Actions</th> <!-- Add Actions Column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in completed_appointments %}
+                <tr>
+                    <td>{{ appointment.patient.name }}</td>
+                    <td>{{ appointment.doctor.name }}</td>
+                    <td>{{ appointment.appointment_date }}</td>
+                    <td>{{ appointment.status }}</td>
+                    <td>
+                        <!-- View Button -->
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewPatientModal{{ appointment.patient.id }}">View</button>
+                    </td>
+                </tr>
+
+                <!-- View Patient Details Modal -->
+                <div class="modal fade text-dark" id="viewPatientModal{{ appointment.patient.id }}" tabindex="-1" aria-labelledby="viewPatientModalLabel{{ appointment.patient.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewPatientModalLabel{{ appointment.patient.id }}">Patient Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Patient Details -->
+                                <p><strong>Name:</strong> {{ appointment.patient.name }}</p>
+                                <p><strong>Age:</strong> {{ appointment.patient.calculate_age }}</p>
+                                <p><strong>Gender:</strong> {{ appointment.patient.gender }}</p>
+                                <p><strong>Email:</strong> {{ appointment.patient.email }}</p>
+                                <p><strong>Phone:</strong> {{ appointment.patient.contact_number }}</p>
+                                <p><strong>Address:</strong> {{ appointment.patient.address }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No completed appointments found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'Hospital/footer.html' %}

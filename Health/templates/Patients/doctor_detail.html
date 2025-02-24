@@ -21,11 +21,13 @@
                     <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
                     <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
 
-                    {% if doctor.rating %}
-                        <p><strong>Rating:</strong> ⭐ {{ doctor.rating }}/5</p>
-                    {% else %}
-                        <p><strong>Rating:</strong> Not yet rated</p>
-                    {% endif %}
+                    <p><strong>Average Rating:</strong>
+    {% if average_rating %}
+        ⭐ {{ average_rating|floatformat:1 }}/5
+    {% else %}
+        Not yet rated
+    {% endif %}
+</p>
 
                     {% if doctor.hospital %}
                         <p><strong>Hospital:</strong> <a href="{% url 'hospital_detail' doctor.hospital.id %}">{{ doctor.hospital.name }}</a></p>
@@ -43,11 +45,34 @@
                         </p>
                     {% endif %}
 
+                    <p><strong>Contact Email:</strong> {{ doctor.email }}</p>
+                    <p><strong>Contact Number:</strong> {{ doctor.contact_number }}</p>
+                    <p><strong>Address:</strong> <a href="https://www.google.com/maps?q={{ doctor.latitude }},{{ doctor.longitude }}" target="_blank">{{ doctor.address }}</a></p>
+                    <p><strong>City:</strong> {{ doctor.city}}</p>
+
                     <!-- Book Appointment Button -->
-                    <a href="#" class="btn btn-primary">Book Appointment</a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#appointmentModal" onclick="fillAppointmentForm('{{ doctor.id }}', '{{ doctor.name }}', '{{ doctor.treatment_type }}')">
+                                                Request Appointment
+                                            </button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Availability Section -->
+    <h4 class="text-center mt-4">Availability</h4>
+    <div class="card shadow-sm p-3 mb-4">
+        <p><strong>Available Days:</strong>
+    {% if doctor.days_available.all %}
+        {% for day in doctor.days_available.all %}
+            {{ day.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        Not specified
+    {% endif %}
+</p>
+        <p><strong>Available Time:</strong> {{ doctor.availability_start_time }} to {{ doctor.availability_end_time }}</p>
+
     </div>
 
     <!-- Patient Reviews Section -->
@@ -64,5 +89,58 @@
         {% endfor %}
     </div>
 </div>
+
+<!-- Modal for Appointment Request -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-dark" id="appointmentModalLabel">Request Appointment</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'submit_appointment_request' %}">
+                    {% csrf_token %}
+
+                    <!-- Hidden Doctor ID -->
+                    <input type="hidden" id="doctor_id" name="doctor_id">
+
+                    <!-- Form Fields -->
+                    <div class="mb-3">
+                        <label for="doctor_name" class="form-label text-dark">Doctor:</label>
+                        <input type="text" id="doctor_name" class="form-control" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="appointment_date" class="form-label">Appointment Date:</label>
+                        <input type="date" name="appointment_date" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="treatment_type" class="form-label">Treatment:</label>
+                        <input type="text" name="treatment_type" id="treatment_type" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label text-dark">Reason:</label>
+                        <input type="text" name="reason" class="form-control" placeholder="Enter reason" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Submit Appointment Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function fillAppointmentForm(doctor_id, doctor_name, treatment_type) {
+        document.getElementById("doctor_name").value = doctor_name;
+        document.getElementById("doctor_id").value = doctor_id;
+        document.getElementById("treatment_type").value = treatment_type;
+        console.log("Treatment Type: ", treatment_type);  // Debugging line
+    }</script>
 
 {% include 'Patients/footer.html' %}

@@ -1,10 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+<h2 class="mb-4">Facilities for Hospital: {{ hospital.name }}</h2>
+
+<!-- Button to open Add Facility Modal -->
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addFacilityModal">Add Facility</button>
+
+<!-- Facility List (Responsive Table) -->
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Availability</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for facility in facilities %}
+            <tr>
+                <td>{{ facility.name }}</td>
+                <td>{{ facility.description }}</td>
+                <td>{{ facility.available_from }} - {{ facility.available_until }}</td>
+                <td>{% if facility.is_active %}Active{% else %}Inactive{% endif %}</td>
+                <td>
+                    <div class="d-flex flex-column flex-sm-row">
+                    <!-- Edit Button -->
+                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editFacilityModal{{ facility.id }}">Edit</button>
+
+                    <!-- Delete Button -->
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteFacilityModal{{ facility.id }}">Delete</button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Edit Facility Modal -->
+            <div class="modal fade text-dark" id="editFacilityModal{{ facility.id }}" tabindex="-1" aria-labelledby="editFacilityModalLabel{{ facility.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editFacilityModalLabel{{ facility.id }}">Edit Facility</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="edit">
+                                <input type="hidden" name="facility_id" value="{{ facility.id }}">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Facility Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ facility.name }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" required>{{ facility.description }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="available_from" class="form-label">Available From</label>
+                                    <input type="time" class="form-control" id="available_from" name="available_from" value="{{ facility.available_from }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="available_until" class="form-label">Available Until</label>
+                                    <input type="time" class="form-control" id="available_until" name="available_until" value="{{ facility.available_until }}" required>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if facility.is_active %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_active">Active</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Facility Modal -->
+            <div class="modal fade text-dark" id="deleteFacilityModal{{ facility.id }}" tabindex="-1" aria-labelledby="deleteFacilityModalLabel{{ facility.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteFacilityModalLabel{{ facility.id }}">Delete Facility</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the facility "{{ facility.name }}"?</p>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="facility_id" value="{{ facility.id }}">
+                                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Facility Modal -->
+<div class="modal fade text-dark" id="addFacilityModal" tabindex="-1" aria-labelledby="addFacilityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addFacilityModalLabel">Add New Facility</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Facility Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="available_from" class="form-label">Available From</label>
+                        <input type="time" class="form-control" id="available_from" name="available_from">
+                    </div>
+                    <div class="mb-3">
+                        <label for="available_until" class="form-label">Available Until</label>
+                        <input type="time" class="form-control" id="available_until" name="available_until">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active">
+                        <label class="form-check-label" for="is_active">Active</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Add Facility</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'Hospital/footer.html' %}

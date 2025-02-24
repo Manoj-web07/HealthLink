@@ -1,10 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Pending Appointment Requests</h2>
+
+    <!-- Appointment Table with responsiveness -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">Requested Date</th>
+                    <th scope="col">Treatment Type</th>
+                    <th scope="col">Doctor</th>  <!-- Added column for Doctor -->
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.patient.name }}</td>
+                        <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                        <td>{{ appointment.treatment_type }}</td>
+                        <td>{{ appointment.doctor.name }}</td>  <!-- Added doctor name -->
+                        <td>
+                            <span class="badge bg-info">{{ appointment.status }}</span>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column flex-sm-row">
+                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ appointment.id }}">Approve</button>
+
+                            <!-- Cancel Button with a Form -->
+                            <form method="POST" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline-block; margin-left: 10px;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for approving appointment -->
+{% for appointment in appointments %}
+<div class="modal fade" id="approveModal{{ appointment.id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveModalLabel{{ appointment.id }}">Approve Appointment for {{ appointment.patient.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'approve_appointment' appointment.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="appointment_date" class="form-label">Requested Date</label>
+                        <input type="text" class="form-control" id="appointment_date" value="{{ appointment.appointment_date|date:'M d, Y' }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="treatment_type" class="form-label">Treatment Type</label>
+                        <input type="text" class="form-control" id="treatment_type" value="{{ appointment.treatment_type }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doctor_name" class="form-label">Doctor</label>
+                        <input type="text" class="form-control" id="doctor_name" value="{{ appointment.doctor.name }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointment_time" class="form-label">Appointment Time</label>
+                        <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Approve Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% include 'Hospital/footer.html' %}

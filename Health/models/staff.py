@@ -4,12 +4,18 @@ from .hospital import Hospital
 from .doctor import Doctor
 
 class Staff(models.Model):
-    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name='staff_members')
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    role = models.CharField(max_length=100, choices=[
+    ROLE_CHOICES = [
         ('Nurse', 'Nurse'),
-        ('Other', 'Other')
-    ])
+        ('Technician', 'Technician'),
+        ('Administrator', 'Administrator'),
+        ('Lab Assistant', 'Lab Assistant'),
+        ('Security', 'Security'),
+        ('Other', 'Other'),
+    ]
+
+    role = models.CharField(max_length=100, choices=ROLE_CHOICES)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='staff_members', blank=True, null=True)

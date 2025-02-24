@@ -1,10 +1,234 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+
+<h2>Staff List</h2>
+
+<!-- Search and Filters -->
+<form method="GET" class="mb-3">
+    <div class="row">
+        <div class="col-md-6 col-12 mb-2">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search by name" value="{{ search_query }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3 col-12 mb-2">
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select name="role" class="form-control">
+                    <option value="">All</option>
+                    {% for role, role_display in roles %}
+                        <option value="{{ role }}" {% if role == role_filter %}selected{% endif %}>{{ role_display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3 col-12 mb-2">
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <select name="department" class="form-control">
+                    <option value="">All</option>
+                    {% for department in departments %}
+                        <option value="{{ department.name }}" {% if department.name == department_filter %}selected{% endif %}>{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary mt-2" type="submit">Apply Filters</button>
+</form>
+
+<!-- Add New Staff Button (opens Add Staff Modal) -->
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStaffModal">Add New Staff</button>
+
+<!-- Staff List Table (made responsive with horizontal scrolling on smaller screens) -->
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Hire Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for staff in staff_members %}
+            <tr>
+                <td>{{ staff.name }}</td>
+                <td>{{ staff.get_role_display }}</td>
+                <td>{{ staff.contact_number }}</td>
+                <td>{{ staff.email }}</td>
+                <td>{{ staff.department.name }}</td>
+                <td>{{ staff.hire_date }}</td>
+                <td>
+                    {% if staff.is_active %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+    <div class="btn-group-vertical d-sm-inline-block d-grid gap-2">
+        <!-- Button to Toggle Status -->
+        <a href="{% url 'toggle_staff_status' staff.id %}" class="btn btn-warning btn-sm">
+            {% if staff.is_active %}Deactivate{% else %}Activate{% endif %}
+        </a>
+
+        <!-- Button to Open Edit Staff Modal -->
+        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editStaffModal{{ staff.id }}">Edit</button>
+
+        <!-- Button to Open Delete Confirmation Modal -->
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteStaffModal{{ staff.id }}">Delete</button>
+    </div>
+</td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No staff found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Adding New Staff -->
+<div class="modal fade text-dark" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addStaffModalLabel">Add New Staff</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'add_staff' %}" method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select name="role" id="role" class="form-control" required>
+              {% for role, role_display in roles %}
+                <option value="{{ role }}">{{ role_display }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="contact_number" class="form-label">Contact Number</label>
+            <input type="text" class="form-control" id="contact_number" name="contact_number">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+          </div>
+          <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <select name="department" id="department" class="form-control">
+              <option value="">Select Department</option>
+              {% for department in departments %}
+                <option value="{{ department.id }}">{{ department.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="hire_date" class="form-label">Hire Date</label>
+            <input type="date" class="form-control" id="hire_date" name="hire_date" required>
+          </div>
+          <div class="mb-3">
+            <label for="is_active" class="form-label">Is Active</label>
+            <input type="checkbox" id="is_active" name="is_active" checked>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Staff</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals for Editing Staff (dynamic for each staff member) -->
+{% for staff in staff_members %}
+<div class="modal fade text-dark" id="editStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="editStaffModalLabel{{ staff.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editStaffModalLabel{{ staff.id }}">Edit Staff</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'edit_staff' staff.id %}" method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ staff.name }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select name="role" id="role" class="form-control" required>
+              {% for role, role_display in roles %}
+                <option value="{{ role }}" {% if staff.role == role %}selected{% endif %}>{{ role_display }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="contact_number" class="form-label">Contact Number</label>
+            <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ staff.contact_number }}">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ staff.email }}">
+          </div>
+          <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <select name="department" id="department" class="form-control">
+              {% for department in departments %}
+                <option value="{{ department.id }}" {% if staff.department == department %}selected{% endif %}>{{ department.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="hire_date" class="form-label">Hire Date</label>
+            <input type="date" class="form-control" id="hire_date" name="hire_date" value="{{ staff.hire_date }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="is_active" class="form-label">Is Active</label>
+            <input type="checkbox" id="is_active" name="is_active" {% if staff.is_active %}checked{% endif %}>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Staff</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Staff Confirmation Modal -->
+<div class="modal fade text-dark" id="deleteStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="deleteStaffModalLabel{{ staff.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteStaffModalLabel{{ staff.id }}">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong>{{ staff.name }}</strong> from the staff list?</p>
+      </div>
+      <div class="modal-footer">
+        <form action="{% url 'delete_staff' staff.id %}" method="POST">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% include 'Hospital/footer.html' %}

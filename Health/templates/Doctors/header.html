@@ -15,66 +15,102 @@
 
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
     {% load static %}
     <!-- Your custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <!-- Popper.js and Bootstrap JS (Optional but Recommended) -->
+    <!-- Popper.js and Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+    <style>
+        /* Sidebar Styles */
+        #sidebarMenu {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            height: 100vh;
+            z-index: 1020;
+        }
+
+        .sidebar {
+            padding-top: 1rem;
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        /* Hide Sidebar on small screens */
+        @media (max-width: 991px) {
+            #sidebarMenu {
+                display: none;
+            }
+
+            .d-md-none {
+                display: block;
+            }
+        }
+
+        /* Responsive Sidebar Toggle Button */
+        .sidebar-toggler {
+            display: none;
+        }
+
+        @media (max-width: 991px) {
+            .sidebar-toggler {
+                display: block;
+            }
+        }
+        @media (max-width: 991px) {
+            .col-sm-10.offset-sm-2 {
+                margin-left: 0;
+                padding-left: 15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-lg-2 col-md-3 sidebar shadow bg-light collapse d-md-block" id="sidebarMenu">
+            <nav class="col-lg-2 col-md-3 sidebar shadow bg-light d-md-block" id="sidebarMenu">
                 <img src="{% static 'image/logo.png' %}" alt="HealthLink Logo" class="logo">
                 <hr class="text-dark">
                 <h3>Doctor Panel</h3>
                 <ul class="nav nav-pills flex-column mb-2">
                     <li class="nav-item">
                         <a class="nav-link text-dark {% if active_page == 'doctor-dashboard' %}active{% endif %}"
-                           href="{% url 'doctor_dashboard' %}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
+                           href="{% url 'doctor_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark {% if active_page == 'appointments' %}active{% endif %}"
-                           href="{% url 'appointments_view' %}">
-                            <i class="bi bi-calendar-event"></i> Appointments
-                        </a>
+                           href="{% url 'appointments_view' %}"><i class="bi bi-calendar-event"></i> Appointments</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark {% if active_page == 'rescheduled_appointments' %}active{% endif %}"
-                           href="{% url 'rescheduled_appointments_view' %}">
-                            <i class="bi bi-calendar-check"></i> Reschedule Appointments
-                        </a>
+                           href="{% url 'rescheduled_appointments_view' %}"><i class="bi bi-calendar-check"></i> Reschedule Appointments</a>
                     </li>
                     <li class="nav-item">
-    <a class="nav-link text-dark {% if active_page == 'appointment-records' %}active{% endif %}"
-       href="{% url 'completed_appointments' %}">
-        <i class="bi bi-clock-history"></i> Appointment Records
-    </a>
-</li>
-
+                        <a class="nav-link text-dark {% if active_page == 'appointment-records' %}active{% endif %}"
+                           href="{% url 'completed_appointments' %}"><i class="bi bi-clock-history"></i> Appointment Records</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark {% if active_page == 'my-patients' %}active{% endif %}"
-                           href="{% url 'my_patients' %}">
-                            <i class="bi bi-person-fill"></i> My Patients
-                        </a>
+                           href="{% url 'my_patients' %}"><i class="bi bi-person-fill"></i> My Patients</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark {% if active_page == 'running_treatments' %}active{% endif %}"
-                           href="{% url 'running_treatments' %}">
-                            <i class="bi bi-capsule"></i> Treatments
-                        </a>
+                           href="{% url 'running_treatments' %}"><i class="bi bi-capsule"></i> Treatments</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark {% if active_page == 'treatments-records' %}active{% endif %}"
-                           href="{% url 'past_treatments' %}">
-                            <i class="bi bi-journal-text"></i> Treatments Records
-                        </a>
+                           href="{% url 'past_treatment' %}"><i class="bi bi-journal-text"></i> Treatments Records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'doctor_comments' %}active{% endif %}"
+                           href="{% url 'doctor_comments' doctor.id %}"><i class="bi bi-chat-left-dots"></i> Comments </a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link text-dark dropdown-toggle {% if active_page == 'settings' %}active{% endif %}"
@@ -82,10 +118,10 @@
                             <i class="bi bi-gear"></i> Settings
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
-                            <li><a class="dropdown-item" href="{% url 'doctor_profile' doctor.id %}"><i class="bi bi-person"></i> Profile</a></li>
+                            <li><a class="dropdown-item {% if active_page == 'profile' %}active{% endif %}" href="{% url 'doctor_profile' doctor.id %}"><i class="bi bi-person"></i> Profile</a></li>
                             <li><a class="dropdown-item" href="{% url 'change_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
                             <li>
-                                <form method="POST" action="#">
+                                <form method="POST" action="{% url 'logout' %}">
                                     {% csrf_token %}
                                     <button class="dropdown-item text-danger" type="submit">
                                         <i class="bi bi-box-arrow-right"></i> Logout
@@ -103,8 +139,8 @@
                 <!-- Navbar -->
                 <nav class="navbar navbar-light shadow mb-4">
                     <div class="container-fluid">
-                        <button class="btn btn-primary d-md-none mb-3" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#sidebarMenu" aria-expanded="false" aria-controls="sidebarMenu">
+                        <!-- Button to toggle sidebar -->
+                       <button class="btn btn-primary d-md-none mb-3" type="button" id="toggleSidebar">
                             <i class="bi bi-list"></i>
                         </button>
 
@@ -127,7 +163,7 @@
                                 <li><a class="dropdown-item" href="{% url 'doctor_profile' doctor.id %}"><i class="bi bi-person"></i> Profile</a></li>
                                 <li><a class="dropdown-item" href="{% url 'change_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
                                 <li>
-                                    <form method="POST" action="#">
+                                    <form method="POST" action="{% url 'logout' %}">
                                         {% csrf_token %}
                                         <button class="dropdown-item text-danger" type="submit">
                                             <i class="bi bi-box-arrow-right"></i> Logout

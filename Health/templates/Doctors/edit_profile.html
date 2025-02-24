@@ -36,7 +36,6 @@
                        id="profile_picture"
                        name="profile_picture"
                        accept="image/*">
-
                 <label for="profile_picture" class="form-label mt-3 d-none">Profile Picture</label>
             </div>
 
@@ -80,9 +79,30 @@
                     <textarea class="form-control" id="address" name="address">{{ doctor.address }}</textarea>
                 </div>
 
+                <!-- City Autocomplete -->
                 <div class="mb-3">
                     <label for="city" class="form-label">City</label>
-                    <input type="text" class="form-control" id="city" name="city" value="{{ doctor.city }}">
+                    <input type="hidden" id="city_id" name="city" value="{{ doctor.city.id }}">
+                    <input type="text" class="form-control" id="city" autocomplete="off" value="{{ doctor.city.name }}">
+                    <div id="city-list" class="list-group" style="display:none;"></div>
+                </div>
+
+                <!-- Add City Button -->
+                <div id="addCityBtnContainer" class="text-end mt-4" style="display: none;">
+                    <button type="button" class="btn btn-success" onclick="addCity()">Add New City</button>
+                </div>
+
+                <!-- Hospital Autocomplete -->
+                <div class="mb-3">
+                    <label for="hospital" class="form-label">Hospital</label>
+                    <input type="hidden" id="hospital_id" name="hospital" value="{{ doctor.hospital.id }}">
+                    <input type="text" class="form-control" id="hospital" autocomplete="off" value="{{ doctor.hospital.name }}">
+                    <div id="hospital-list" class="list-group" style="display:none;"></div>
+                </div>
+
+                <!-- Add Hospital Button -->
+                <div id="addHospitalBtnContainer" class="text-end mt-4" style="display: none;">
+                    <a href="registration" class="btn btn-success">Add Hospital</a>
                 </div>
 
                 <div class="mb-3">
@@ -105,15 +125,33 @@
                     <textarea class="form-control" id="about" name="about" rows="4">{{ doctor.about }}</textarea>
                 </div>
 
+                <!-- Diseases Section -->
                 <h3>Diseases Treated</h3>
-                    <div class="form-check">
-                        {% for disease in diseases %}
-                            <input type="checkbox" name="diseases" value="{{ disease.id }}" 
+
+                <!-- Search Input for diseases -->
+                <div class="mb-3">
+                    <label for="diseaseSearch" class="form-label">Search Diseases</label>
+                    <input type="text" id="diseaseSearch" class="form-control" placeholder="Search diseases by name" onkeyup="searchDiseases()">
+                </div>
+
+                <!-- Disease Checkboxes -->
+                <div class="form-check d-flex flex-wrap" id="diseaseCheckboxes">
+                    {% for disease in diseases %}
+                        <div class="me-5 mb-3 disease-item">
+                            <input type="checkbox" name="diseases" value="{{ disease.id }}"
                                    id="disease_{{ disease.id }}" class="form-check-input"
                                    {% if disease in doctor.diseases.all %}checked{% endif %}>
-                            <label for="disease_{{ disease.id }}" class="form-check-label">{{ disease.name }}</label><br>
-                        {% endfor %}
-                    </div>
+                            <label for="disease_{{ disease.id }}" class="form-check-label">{{ disease.name }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- "Add Disease" Button -->
+                <div id="addDiseaseBtnContainer" class="text-end mt-4" style="display: none;">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDiseaseModal">
+                        Add New Disease
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -123,4 +161,172 @@
     </form>
 </div>
 
-{% include 'Doctors/footer.html' %}
+<!-- Add City Modal -->
+<div class="modal fade text-dark" id="addCityModal" tabindex="-1" aria-labelledby="addCityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCityModalLabel">Add New City</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCityForm" method="POST" action="{% url 'add_city' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="new_city_name" class="form-label">City Name</label>
+                        <input type="text" class="form-control" id="new_city_name" name="name" required>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Add City</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Disease Modal -->
+<div class="modal fade text-dark" id="addDiseaseModal" tabindex="-1" aria-labelledby="addDiseaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDiseaseModalLabel">Add New Disease</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addDiseaseForm" method="POST" action="{% url 'add_disease' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="new_disease_name" class="form-label">Disease Name</label>
+                        <input type="text" class="form-control" id="new_disease_name" name="name" required>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Add Disease</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Search Filtering -->
+<script>
+    function searchDiseases() {
+        const searchInput = document.getElementById('diseaseSearch').value.toLowerCase();
+        const diseaseItems = document.querySelectorAll('.disease-item');
+        let found = false;
+
+        diseaseItems.forEach(function(item) {
+            const label = item.querySelector('label').innerText.toLowerCase();
+            if (label.includes(searchInput)) {
+                item.style.display = 'block';
+                found = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const addButtonContainer = document.getElementById('addDiseaseBtnContainer');
+        if (!found && searchInput) {
+            addButtonContainer.style.display = 'block';
+        } else {
+            addButtonContainer.style.display = 'none';
+        }
+    }
+
+    // City Search functionality
+    document.getElementById('city').addEventListener('input', function() {
+        var input = this.value;
+        var list = document.getElementById('city-list');
+        list.innerHTML = ''; // Clear the previous suggestions
+
+        if (input.length > 0) {
+            fetch(`/search_cities/?query=${input}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cities.length > 0) {
+                        list.style.display = 'block'; // Show the list
+                        data.cities.forEach(city => {
+                            var item = document.createElement('a');
+                            item.href = '#';
+                            item.classList.add('list-group-item', 'list-group-item-action');
+                            item.textContent = city.name;
+                            item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                document.getElementById('city').value = city.name; // Set input value
+                                document.getElementById('city_id').value = city.id; // Set the city ID
+                                list.style.display = 'none'; // Hide list
+                            });
+                            list.appendChild(item);
+                        });
+                        document.getElementById('addCityBtnContainer').style.display = 'none'; // Hide add button if matches are found
+                    } else {
+                        list.style.display = 'none'; // Hide list if no results
+                        document.getElementById('addCityBtnContainer').style.display = 'block'; // Show add button if no matches
+                    }
+                });
+        } else {
+            list.style.display = 'none'; // Hide list if no input
+            document.getElementById('addCityBtnContainer').style.display = 'none'; // Hide add button
+        }
+    });
+
+    // Function to add city
+    function addCity() {
+        var cityName = prompt("Enter the name of the new city:");
+        if (cityName) {
+            fetch('/add_city/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ name: cityName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('City added successfully!');
+                    document.getElementById('city').value = cityName; // Set the city input to the newly added city name
+                    document.getElementById('city_id').value = data.city_id; // Set the city ID from the server response
+                } else {
+                    alert('Error adding city.');
+                }
+            });
+        }
+    }
+
+    // Hospital Search functionality
+    document.getElementById('hospital').addEventListener('input', function() {
+        var input = this.value;
+        var list = document.getElementById('hospital-list');
+        list.innerHTML = ''; // Clear previous results
+
+        if (input.length > 0) {
+            fetch(`/search_hospitals/?query=${input}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.hospitals.length > 0) {
+                        list.style.display = 'block'; // Show the list
+                        data.hospitals.forEach(hospital => {
+                            var item = document.createElement('a');
+                            item.href = '#';
+                            item.classList.add('list-group-item', 'list-group-item-action');
+                            item.textContent = hospital.name;
+                            item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                document.getElementById('hospital').value = hospital.name; // Set hospital input value
+                                document.getElementById('hospital_id').value = hospital.id; // Set hospital ID
+                                list.style.display = 'none'; // Hide the list
+                            });
+                            list.appendChild(item);
+                        });
+                    } else {
+                        list.style.display = 'none'; // Hide the list if no results
+                    }
+                });
+        } else {
+            list.style.display = 'none'; // Hide the list if no input
+        }
+    });
+</script>

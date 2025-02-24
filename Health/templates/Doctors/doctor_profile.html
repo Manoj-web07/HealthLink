@@ -29,6 +29,7 @@
 
                 <h3 class="mt-4">Professional Information</h3>
                 <ul class="list-group">
+                    <li class="list-group-item"><strong>{{ doctor.hospital.hospital_type }}</strong> {{ doctor.hospital.name }}</li>
                     <li class="list-group-item"><strong>Specialty:</strong> {{ doctor.specialty }}</li>
                     <li class="list-group-item"><strong>Qualifications:</strong> {{ doctor.qualification }}</li>
                     <li class="list-group-item"><strong>Experience:</strong> {{ doctor.experience_years }} years</li>
@@ -64,14 +65,22 @@
                 <h3 class="mt-4">About</h3>
                 <p class="border p-3 rounded bg-light">{{ doctor.about }}</p>
 
-               <h3 class="mt-4">Diseases Treated</h3>
-<ul class="list-group">
+<h3 class="mt-4">Diseases Treated</h3>
+<div class="d-flex flex-row flex-wrap">
     {% for disease in diseases %}
-        <li class="list-group-item">{{ disease.name }}</li>
+        <div class="me-2 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fs-6">{{ disease.name }}</h5>
+                </div>
+            </div>
+        </div>
     {% empty %}
-        <li class="list-group-item">No diseases listed.</li>
+        <div class="alert alert-info">No diseases listed.</div>
     {% endfor %}
-</ul>
+</div>
+
+
 
                 <div class="text-end mt-4 mb-2">
                     <a href="{% url 'edit_doctor_profile' %}" class="btn btn-primary">Edit Profile</a>

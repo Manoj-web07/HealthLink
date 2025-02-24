@@ -1,6 +1,16 @@
  </div> <!-- End of Main Content -->
         </div> <!-- End of Row -->
     </div> <!-- End of Container -->
+   <script>
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebarMenu');
+            if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+                sidebar.style.display = 'block'; // Show sidebar
+            } else {
+                sidebar.style.display = 'none'; // Hide sidebar
+            }
+        });
+    </script>
 </body>
 
 </html>

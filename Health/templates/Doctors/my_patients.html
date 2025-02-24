@@ -2,6 +2,12 @@
 
 <div class="container mt-4">
     <h3>My Patients</h3>
+     <form method="GET" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search by patient name" value="{{ request.GET.search }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
     <table class="table table-bordered">
         <thead>
             <tr>

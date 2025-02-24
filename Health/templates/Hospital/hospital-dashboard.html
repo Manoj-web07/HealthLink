@@ -1,10 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+<div class="container mt-4">
+    <h2 class="mb-4">{{ hospital.name }} Dashboard</h2>
+    <div class="row">
+        {% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+        <!-- Number of Doctors -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);">
+                <div class="card-body">
+                    <h5 class="card-title">Doctors</h5>
+                    <p class="card-text fs-3">{{ num_doctors }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Number of Staff -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                <div class="card-body">
+                    <h5 class="card-title">Staff</h5>
+                    <p class="card-text fs-3">{{ num_staff }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Number of Departments -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #00b09b, #96c93d);">
+                <div class="card-body">
+                    <h5 class="card-title">Departments</h5>
+                    <p class="card-text fs-3">{{ num_departments }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Today's Appointments -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #ff416c, #ff4b2b);">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Appointments</h5>
+                    <p class="card-text fs-3">{{ today_appointments }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Total Appointment Requests -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
+                <div class="card-body">
+                    <h5 class="card-title">Appointment Requests</h5>
+                    <p class="card-text fs-3">{{ total_appointment_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Reschedule Requests -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #ffafbd, #ffc3a0);">
+                <div class="card-body">
+                    <h5 class="card-title">Reschedule Requests</h5>
+                    <p class="card-text fs-3">{{ total_reschedule_requests }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Running Treatments -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
+                <div class="card-body">
+                    <h5 class="card-title">Running Treatments</h5>
+                    <p class="card-text fs-3">{{ running_treatments }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Average Doctor Ratings -->
+        <div class="col-md-4">
+            <div class="card shadow text-light mb-3" style="background: linear-gradient(135deg, #ff5f6d, #ffc3a0);">
+                <div class="card-body">
+                    <h5 class="card-title">Avg Doctor Ratings</h5>
+                    <p class="card-text fs-3">{{ avg_doctor_rating }} ⭐</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'Hospital/footer.html' %}

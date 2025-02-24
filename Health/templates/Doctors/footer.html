@@ -1,6 +1,14 @@
  </div>
         </div>
     </div>
+
+    <script>
+        // Toggle sidebar on small screens
+        document.getElementById('toggleSidebar').addEventListener('click', function () {
+            var sidebar = document.getElementById('sidebarMenu');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
 </body>
 
 </html>

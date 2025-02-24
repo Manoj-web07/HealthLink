@@ -48,3 +48,10 @@ class Patient(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+
+    def calculate_age(self):
+        from datetime import date
+        today = date.today()
+        age = today.year - self.date_of_birth.year - (
+                    (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+        return age

@@ -1,10 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Doctors/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">{{ doctor.name }}'s Comments</h2>
+
+    <!-- Search Bar for Comments -->
+    <form method="GET" action="{% url 'doctor_comments' doctor.id %}">
+        <div class="mb-4">
+            <label for="search" class="form-label">Search Comments</label>
+            <input type="text" id="search" name="search" class="form-control" placeholder="Search comments..."
+                   value="{{ search_query }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Displaying the comments -->
+    <div id="commentList">
+        {% for comment in comments %}
+            <div class="card mb-3 mt-2 shadow-sm border-light">
+                <div class="card-body">
+                    <!-- Patient's Name and Date -->
+                    <h5 class="card-title">{{ comment.patient.name }}</h5>
+                    <small class="text-muted">{{ comment.created_at|date:"F j, Y, g:i a" }}</small>
+
+                    <!-- Comment Text -->
+                    <p class="card-text mt-2">{{ comment.comment }}</p>
+
+                    <!-- Rating Display (Star Format) -->
+                    <div class="stars mt-2">
+                        {% for i in star_range %}
+                            {% if i <= comment.rating %}
+                                <i class="bi bi-star-fill text-warning"></i>  <!-- Filled star -->
+                            {% else %}
+                                <i class="bi bi-star text-muted"></i>  <!-- Empty star -->
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments found.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% include 'Doctors/footer.html' %}

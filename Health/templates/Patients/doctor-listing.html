@@ -11,7 +11,6 @@
     <!-- Search Form -->
     <form method="GET" action="{% url 'doctor_listing' %}" class="p-4 border rounded shadow-sm bg-light" id="searchForm">
         {% csrf_token %}
-
         <input type="hidden" id="latitude" name="latitude">
         <input type="hidden" id="longitude" name="longitude">
 
@@ -33,26 +32,68 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="disease" class="form-label">Disease:</label>
-            <select name="disease" id="disease" class="form-select">
-                <option value="">Select Disease</option>
-                {% for disease in diseases %}
-                    <option value="{{ disease }}" {% if selected_disease == disease %}selected{% endif %}>{{ disease }}</option>
-                {% endfor %}
-            </select>
-        </div>
+       <div class="mb-3">
+    <label for="disease" class="form-label text-dark">Disease:</label>
+    <!-- Select Dropdown -->
+    <select name="disease" id="disease" class="form-select">
+        <option value="">Select Disease</option>
+        {% for disease in diseases %}
+            <option value="{{ disease.name }}" {% if selected_disease == disease.name %}selected{% endif %}>{{ disease.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+
+<!-- Initialize Select2 -->
+<script>
+    $(document).ready(function() {
+        // Apply Select2 to the disease dropdown
+        $('#disease').select2({
+            placeholder: "Search and select a disease",
+            allowClear: true
+        });
+    });
+</script>
+        <style>
+
+
+.select2-container .select2-selection {
+    border: 1px solid #ccc;  /* Light border */
+}
+
+.select2-container--default .select2-results__option {
+    color: #000 !important;  /* Dark text for dropdown options */
+}
+
+/* Change text color for the selected item in the dropdown */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #000 !important;  /* Dark text */
+}
+
+        </style>
 
         <div class="mb-3">
-            <label for="city" class="form-label">Select City:</label>
-            <select name="city" id="city" class="form-select" onchange="toggleNearby(this)">
-                <option value="">Select City</option>
-                {% for city in cities %}
-                    <option value="{{ city.name }}" {% if selected_city == city.name %}selected{% endif %}>{{ city.name }}</option>
-                {% endfor %}
-                <option value="nearby" {% if selected_city == 'nearby' %}selected{% endif %}>Find Nearby Locations</option>
-            </select>
-        </div>
+    <label for="city" class="form-label">Select City:</label>
+    <!-- Select Dropdown with search feature -->
+    <select name="city" id="city" class="form-select  border-light" onchange="toggleNearby(this)">
+        <option value="">Select City</option>
+        {% for city in cities %}
+            <option value="{{ city.name }}" {% if selected_city == city.name %}selected{% endif %}>{{ city.name }}</option>
+        {% endfor %}
+        <option value="nearby" {% if selected_city == 'nearby' %}selected{% endif %}>Find Nearby Locations</option>
+    </select>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Apply Select2 to the city dropdown for search functionality
+        $('#city').select2({
+            placeholder: "Search and select a city",
+            allowClear: true
+        });
+    });
+</script>
+
 
         <div class="mb-3">
             <button type="submit" class="btn btn-primary w-100">Search</button>
@@ -122,7 +163,9 @@
                                             <p class="card-text"><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
 
                                             <a href="{% url 'doctor_detail' doctor.id %}" class="btn btn-info btn-sm">View</a>
-                                            <a href="#" class="btn btn-primary btn-sm">Book Appointment</a>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#appointmentModal" onclick="fillAppointmentForm('{{ doctor.id }}', '{{ doctor.name }}', '{{ doctor.treatment_type }}')">
+                                                Request Appointment
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -139,7 +182,59 @@
     </div>
 </div>
 
+<!-- Modal for Appointment Request -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-dark" id="appointmentModalLabel">Request Appointment</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'submit_appointment_request' %}">
+                    {% csrf_token %}
+
+                    <!-- Hidden Doctor ID -->
+                    <input type="hidden" id="doctor_id" name="doctor_id">
+
+                    <!-- Form Fields -->
+                    <div class="mb-3">
+                        <label for="doctor_name" class="form-label text-dark">Doctor:</label>
+                        <input type="text" id="doctor_name" class="form-control" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="appointment_date" class="form-label">Appointment Date:</label>
+                        <input type="date" name="appointment_date" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="treatment_type" class="form-label">Treatment:</label>
+                        <input type="text" name="treatment_type" id="treatment_type" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label text-dark">Reason:</label>
+                        <input type="text" name="reason" class="form-control" placeholder="Enter reason" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Submit Appointment Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    function fillAppointmentForm(doctor_id, doctor_name, treatment_type) {
+        document.getElementById("doctor_name").value = doctor_name;
+        document.getElementById("doctor_id").value = doctor_id;
+        document.getElementById("treatment_type").value = treatment_type;
+        console.log("Treatment Type: ", treatment_type);  // Debugging line
+    }
+
     function autoFillLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {

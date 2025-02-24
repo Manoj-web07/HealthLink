@@ -2,40 +2,144 @@
 
 {% block content %}
     <div class="container mt-4">
-        <h3>Running Treatments</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Patient</th>
-                    <th>Treatment Name</th>
-                    <th>Start Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for treatment in running_treatments %}
+        <h3 class="text-center mb-4">Running Treatments</h3>
+
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'running_treatments' %}" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search patients by name" value="{{ request.GET.search }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Add Treatment Button -->
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addTreatmentModal">Add New Treatment</button>
+
+        <!-- Table of Running Treatments -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ treatment.patient.name }}</td> <!-- Patient's Name -->
-                        <td>{{ treatment.name }}</td> <!-- Treatment Name -->
-                        <td>{{ treatment.start_date|date:"F j, Y" }}</td> <!-- Start Date -->
-                        <td>
-                            <span class="badge bg-primary">Running</span>  <!-- Treatment Status -->
-                        </td>
-                        <td>
-                            <!-- End Treatment Button -->
-                            <a href="{% url 'end_treatment' treatment.id %}" class="btn btn-danger btn-sm">End Treatment</a>
-                        </td>
+                        <th>#</th>
+                        <th>Patient</th>
+                        <th>Treatment Name</th>
+                        <th>Start Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">No running treatments.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for treatment in running_treatments %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ treatment.patient.name }}</td>
+                            <td>{{ treatment.name }}</td>
+                            <td>{{ treatment.start_date|date:"F j, Y" }}</td>
+                            <td><span class="badge bg-primary">Running</span></td>
+                            <td>
+                                <a href="{% url 'end_treatment' treatment.id %}" class="btn btn-danger btn-sm">End Treatment</a>
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTreatmentModal"
+                                    data-id="{{ treatment.id }}"
+                                    data-name="{{ treatment.name }}"
+                                    data-start_date="{{ treatment.start_date|date:'Y-m-d' }}">Edit</button>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No running treatments.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <!-- Add New Treatment Modal -->
+    <div class="modal fade text-dark" id="addTreatmentModal" tabindex="-1" aria-labelledby="addTreatmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTreatmentModalLabel">Add New Treatment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="add_treatment" value="true">
+                        <div class="mb-3">
+                            <label for="patient_name" class="form-label">Patient Name</label>
+                            <select class="form-control" id="patient_name" name="patient_name" required>
+                                <option value="">Select Patient</option>
+                                {% for patient in patients %}
+                                    <option value="{{ patient.id }}">{{ patient.name }}</option>
+                                {% empty %}
+                                    <option value="" disabled>No patients available</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="treatment_name" class="form-label">Treatment Name</label>
+                            <input type="text" class="form-control" id="treatment_name" name="treatment_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Treatment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Treatment Modal -->
+    <div class="modal fade text-dark" id="editTreatmentModal" tabindex="-1" aria-labelledby="editTreatmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editTreatmentModalLabel">Edit Treatment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="edit_treatment" value="true">
+                        <input type="hidden" name="treatment_id" id="edit_treatment_id">
+                        <div class="mb-3">
+                            <label for="edit_treatment_name" class="form-label">Treatment Name</label>
+                            <input type="text" class="form-control" id="edit_treatment_name" name="treatment_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="edit_start_date" name="start_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
+
 {% include 'Doctors/footer.html' %}
+
+<script>
+    // JavaScript to pre-fill the edit modal fields
+    const editTreatmentModal = document.getElementById('editTreatmentModal');
+    editTreatmentModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const treatmentId = button.getAttribute('data-id');
+        const treatmentName = button.getAttribute('data-name');
+        const startDate = button.getAttribute('data-start_date');
+
+        const treatmentInput = editTreatmentModal.querySelector('#edit_treatment_name');
+        const startDateInput = editTreatmentModal.querySelector('#edit_start_date');
+        const treatmentIdInput = editTreatmentModal.querySelector('#edit_treatment_id');
+
+        treatmentIdInput.value = treatmentId;
+        treatmentInput.value = treatmentName;
+        startDateInput.value = startDate;
+    });
+</script>

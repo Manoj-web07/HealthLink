@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Upcoming Appointments</h2>
+
+    <!-- Appointment Table with responsive design -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">Appointment Date/Time</th>
+                    <th scope="col">Doctor Name</th>
+                    <th scope="col">Treatment Type</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    {% if appointment.status == "Scheduled" %}
+                        <tr>
+                            <td>{{ appointment.patient.name }}</td>
+                            <td>{{ appointment.appointment_date|date:"M d, Y / h:i A" }}</td>
+                            <td>{{ appointment.doctor.name }}</td> <!-- Doctor's name -->
+                            <td>{{ appointment.treatment_type }}</td> <!-- Treatment type -->
+                            <td>
+                                <span class="badge bg-info">Upcoming</span>
+                            </td>
+                            <td>
+                                <div class="btn-group-vertical btn-group-sm d-block d-sm-inline-block">
+                                   <!-- Attend button -->
+                                    <a href="{% url 'attend' appointment_id=appointment.id %}" class="btn btn-primary">Attend</a>
+
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No upcoming appointments found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'Hospital/footer.html' %}

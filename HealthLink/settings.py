@@ -122,9 +122,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
+# settings.py
+
+# URL to use when referring to static files
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Path where static files are collected (used in production)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -134,5 +141,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
+# Email Settings (for Gmail SMTP)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # For TLS, use 465 for SSL
+EMAIL_USE_TLS = True  # Use TLS for secure connection
+EMAIL_USE_SSL = False  # If using SSL, set this to True and EMAIL_PORT to 465
+EMAIL_HOST_USER = 'healthlink2502@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'hrwl xupl vwsk psxy'
 
+CONTACT_EMAIL = 'healthlink2502@gmail.com'
 

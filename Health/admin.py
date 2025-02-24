@@ -61,16 +61,23 @@ admin.site.register(Doctor, DoctorAdmin)
 admin.site.register(Disease)
 admin.site.register(Language)
 admin.site.register(DayOfWeek)
+
+class DepartmentInline(admin.TabularInline):
+    model = Hospital.departments.through
+    extra = 1
+
+class FacilityInline(admin.TabularInline):
+    model = Hospital.hospital_facilities.through
+    extra = 1
 class HospitalAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'contact_number', 'email', 'is_active', 'established_date')
+    list_display = ('name', 'address', 'contact_number', 'city','email', 'is_active', 'established_date')
     list_filter = ('is_active', 'established_date')
     search_fields = ('name', 'address', 'email')
     filter_horizontal = ('departments', 'hospital_facilities')  # Only for Many-to-Many fields
     ordering = ['name']
 
 admin.site.register(Hospital, HospitalAdmin)
-admin.site.register(Department)
-admin.site.register(Facility)
+
 
 class HospitalFeedbackAdmin(admin.ModelAdmin):
     list_display = ('hospital', 'patient', 'rating', 'date')
@@ -152,3 +159,4 @@ admin.site.register(Treatment, TreatmentAdmin)
 class CityAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
+    ordering = ('name',)

@@ -1,10 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+<div class="container text-dark mt-4">
+    <h2 class="text-center">Dr. {{ doctor.name }}</h2>
+
+    <div class="card shadow-sm p-3 mb-4">
+        <div class="row">
+            <!-- Doctor Profile Picture -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center">
+                {% if doctor.profile_picture %}
+                    <img src="{{ doctor.profile_picture.url }}" class="img-fluid rounded" alt="Dr. {{ doctor.name }}" style="max-height: 250px; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/250" class="img-fluid rounded" alt="No Image Available">
+                {% endif %}
+            </div>
+
+            <!-- Doctor Details -->
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+                    <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+                    <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
+{% if average_rating %}
+    <p><strong>Average Rating:</strong> ⭐ {{ average_rating|floatformat:1 }}/5</p>
+{% else %}
+    <p><strong>Rating:</strong> Not yet rated</p>
+{% endif %}
+                    {% if doctor.hospital %}
+                        <p><strong>Hospital:</strong> {{ doctor.hospital.name }}</p>
+                    {% else %}
+                        <p><strong>Hospital:</strong> Independent Practitioner</p>
+                    {% endif %}
+
+                    <p><strong>Consultation Type:</strong> {{ doctor.get_consultation_type_display }}</p>
+
+                    {% if doctor.languages_spoken.all %}
+                        <p><strong>Languages Spoken:</strong>
+                            {% for lang in doctor.languages_spoken.all %}
+                                {{ lang.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+        <tr>
+            <th>Status:</th>
+            <td>
+                {% if doctor.is_active %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+                </div></div>
+        </div></div>
+         <a href="{% url 'doctors_page' %}" class="btn btn-primary">Back to Doctors List</a>
+
+    <!-- Patient Reviews Section -->
+    <h4 class="text-center mt-4">Patient Reviews</h4>
+    <div class="list-group mb-4">
+        {% for review in doctor.reviews.all %}
+            <div class="list-group-item">
+                <h6>{{ review.patient_name }}</h6>
+                <p>{{ review.comment }}</p>
+                <p><strong>Rating:</strong> ⭐ {{ review.rating }}/5</p>
+            </div>
+        {% empty %}
+            <p class="text-center text-muted">No reviews yet.</p>
+        {% endfor %}
+    </div></div>
+    {% include 'Hospital/footer.html' %}

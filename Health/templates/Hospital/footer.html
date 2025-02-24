@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
+ </div>
+        </div>
+    </div>
+<script>
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebarMenu');
+            if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+                sidebar.style.display = 'block'; // Show sidebar
+            } else {
+                sidebar.style.display = 'none'; // Hide sidebar
+            }
+        });
+    </script>
 </body>
 </html>

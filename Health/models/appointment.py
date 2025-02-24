@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 
 class Appointment(models.Model):
     STATUS_CHOICES = [
+        ('Requested', 'Requested'),
         ('Scheduled', 'Scheduled'),
         ('Completed', 'Completed'),
         ('Canceled', 'Canceled'),

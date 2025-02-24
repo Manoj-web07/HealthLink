@@ -1,10 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HealthLink{% endblock %}</title>
 
-</body>
-</html>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Optional: FontAwesome for additional icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    {% load static %}
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        /* Sidebar Styles */
+        #sidebarMenu {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            height: 100vh;
+            z-index: 1020;
+        }
+
+        .sidebar {
+            padding-top: 1rem;
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        /* Hide Sidebar on small screens */
+        @media (max-width: 991px) {
+            #sidebarMenu {
+                display: none;
+            }
+
+            .d-md-none {
+                display: block;
+            }
+        }
+
+        /* Responsive Sidebar Toggle Button */
+        .sidebar-toggler {
+            display: none;
+        }
+
+        @media (max-width: 991px) {
+            .sidebar-toggler {
+                display: block;
+            }
+        }
+
+        /* Adjust the content width when the sidebar is hidden */
+        @media (max-width: 991px) {
+            .col-sm-10.offset-sm-2 {
+                margin-left: 0;
+                padding-left: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-lg-2 col-md-3 sidebar shadow bg-light collapse d-md-block" id="sidebarMenu">
+                <img src="{% static 'image/logo.png' %}" alt="HealthLink Logo" class="logo">
+                <hr class="text-dark">
+                <h3>Hospital Panel</h3>
+                <ul class="nav nav-pills flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'hospital-dashboard' %}active{% endif %}"
+                           href="{% url 'hospital_dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'appointments' %}active{% endif %}"
+                           href="{% url 'upcoming_appointments' %}">
+                            <i class="bi bi-calendar-event"></i> Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+    <a class="nav-link text-dark {% if active_page == 'appointment-requests' %}active{% endif %}"
+       href="{% url 'appointments-request' %}">
+        <i class="bi bi-envelope-open"></i> Appointment Requests
+    </a>
+</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'reschedule-requests' %}active{% endif %}"
+                           href="{% url 'reschedule_request' %}">
+                            <i class="bi bi-arrow-repeat"></i> Reschedule Requests
+                        </a>
+                    </li>
+                    <ul class="navbar-nav">
+    <!-- Running Treatments Nav Item -->
+    <li class="nav-item">
+        <a class="nav-link text-dark {% if active_page == 'running-treatments' %}active{% endif %}"
+           href="{% url 'running_treatment' %}">
+            <i class="bi bi-capsule"></i> Running Treatments
+        </a>
+    </li>
+</ul>
+                    <li class="nav-item">
+    <a class="nav-link text-dark {% if active_page == 'doctors' %}active{% endif %}"
+       href="{% url 'doctors_page' %}">
+        <i class="bi bi-person-lines-fill"></i> Doctors
+    </a>
+</li>
+
+                    <li class="nav-item">
+    <a class="nav-link text-dark {% if active_page == 'staff' %}active{% endif %}" href="{% url 'staff_list' %}">
+        <i class="bi bi-people-fill"></i> Staff
+    </a>
+</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'departments' %}active{% endif %}"
+                           href="{% url 'department_list' %}">
+                            <i class="bi bi-building"></i> Departments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'facilities' %}active{% endif %}"
+                           href="{% url 'facility_list' %}">
+                            <i class="bi bi-hospital"></i> Facilities
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'appointment-records' %}active{% endif %}"
+                           href="{% url 'completed_appointment' %}">
+                            <i class="bi bi-journal-medical"></i> Appointment Records
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark {% if active_page == 'treatments-records' %}active{% endif %}"
+                           href="{% url 'treatment_records' %}">
+                            <i class="bi bi-capsule"></i> Treatments Records
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle {% if active_page == 'settings' %}active{% endif %}"
+                           id="settingsDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear"></i> Settings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                            <li><a class="dropdown-item {% if active_page == 'profile' %}active{% endif %}" href="{% url 'hospital-profile' hospital_id=hospital.id %}"><i class="bi bi-person"></i> Profile</a></li>
+                            <li><a class="dropdown-item {% if active_page == 'password' %}active{% endif %}" href="{% url 'change_hospital_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
+                            <li>
+                                <form method="POST" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item text-danger " type="submit">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <hr class="text-dark">
+            </nav>
+
+            <!-- Main Content -->
+            <div class="col-sm-10 offset-sm-2">
+                <!-- Navbar -->
+                <nav class="navbar navbar-light shadow mb-4">
+                    <div class="container-fluid">
+                        <button class="btn btn-primary d-md-none mb-3" type="button" id="toggleSidebar">
+                            <i class="bi bi-list"></i>
+                        </button>
+
+                        <span class="navbar-brand">{{ hospital.name }}</span>
+
+                        <!-- User Profile Dropdown -->
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center text-dark text-decoration-none"
+                               id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if hospital.profile_picture %}
+                                    <img src="{{ hospital.profile_picture.url }}" alt="Profile Picture" width="45"
+                                         height="45" class="rounded-circle">
+                                {% else %}
+                                    <i class="bi bi-person-circle" style="font-size: 40px;"></i>
+                                {% endif %}
+                            </a>
+
+                            <!-- Dropdown Menu -->
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                                <li><a class="dropdown-item {% if active_page == 'profile' %}active{% endif %}" href="{% url 'hospital-profile' hospital_id=hospital.id %}"><i class="bi bi-person"></i> Profile</a></li>
+                                <li><a class="dropdown-item {% if active_page == 'password' %}active{% endif %}" href="{% url 'change_hospital_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
+                                <li>
+                                    <form method="POST" action="{% url 'logout' %}>
+                                        {% csrf_token %}
+                                        <button class="dropdown-item text-danger" type="submit">
+                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>

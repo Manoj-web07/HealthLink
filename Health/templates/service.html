@@ -1,10 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - HealthLink</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        h1, h2, h3 {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+        }
+
+         /* Header Styling */
+        .header {
+        z-index: 2000;
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .header .logo img {
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+        }
+
+        .header ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .header ul li {
+            font-size: 1rem;
+        }
+
+        .header ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .header ul li a:hover {
+            color: #ffbb33;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 10px 10px;
+            text-align: center;
+        }
+
+        .services-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .services-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .service-card {
+            background: #fff;
+            padding: 5px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 30%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .service-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card i {
+            font-size: 3rem;
+            color: #3d76f0;
+            margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .service-card p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Detailed Service Section */
+        .detailed-service {
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-radius: 12px;
+        }
+
+        .detailed-service h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .detailed-service ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .detailed-service ul li {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer-content {
+            margin-bottom: 20px;
+        }
+
+        .social-media {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-media li a {
+            color: #fff;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-media li a:hover {
+            color: #ffbb33;
+        }
+
+    </style>
 </head>
 <body>
-$END$
+
+    <header class="header">
+            <div class="logo">
+                <img src="{% static 'image/logo.png' %}" alt="HealthLink Logo">
+            </div>
+            <ul>
+                <li><a href="{% url 'intro' %}">Home</a></li>
+                <li><a href="{% url 'services' %}">Services</a></li>
+                <li><a href="{% url 'contact_us' %}">Contact</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="services-section">
+        <h1>Our Services</h1>
+        <p>At HealthLink, we offer the following essential features to make your healthcare experience seamless and convenient. Here's how we can help you:</p>
+
+        <div class="services-container">
+            <!-- Service 1: Online Appointment Booking -->
+            <div class="service-card">
+                <i class="bi bi-calendar-check"></i> <!-- Calendar Check Icon -->
+                <h3>Online Appointment Booking</h3>
+                <p>Book appointments with healthcare providers easily, choose your preferred date and time, and consult doctors virtually at your convenience.</p>
+            </div>
+
+            <!-- Service 2: Appointment Cancellation & Rescheduling -->
+            <div class="service-card">
+                <i class="bi bi-calendar-x"></i> <!-- Calendar X Icon -->
+                <h3>Appointment Cancellation & Rescheduling</h3>
+                <p>Need to cancel or reschedule? Our platform allows you to manage appointments efficiently with simple and quick actions.</p>
+            </div>
+
+            <!-- Service 3: Find Doctor & Hospitals Based on Disease & Rating -->
+            <div class="service-card">
+                <i class="bi bi-search"></i> <!-- Search Icon -->
+                <h3>Find Doctors & Hospitals</h3>
+                <p>Search for doctors or hospitals based on your specific disease or condition. View ratings, reviews, and make informed decisions for your care.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Service Information -->
+    <section class="detailed-service">
+        <h2>Detailed Service Information</h2>
+
+        <!-- Online Appointment Booking -->
+        <div class="service-detail">
+            <h3>Online Appointment Booking</h3>
+            <p>Our online booking system is designed for convenience and speed. You can schedule an appointment in just a few clicks:</p>
+            <ul>
+                <li>Choose your preferred date and time from the available slots.</li>
+                <li>Select a doctor based on specialty or rating.</li>
+                <li>Receive a confirmation with the appointment details.</li>
+                <li>Consult with the doctor at the scheduled time.</li>
+            </ul>
+            <h4>Benefits:</h4>
+            <ul>
+                <li>Book from anywhere, at any time.</li>
+                <li>Flexible scheduling to fit your busy life.</li>
+                <li>Access to a variety of specialists.</li>
+            </ul>
+        </div>
+
+        <!-- Appointment Cancellation & Rescheduling -->
+        <div class="service-detail">
+            <h3>Appointment Cancellation & Rescheduling</h3>
+            <p>Plans change, and we understand that. Our platform makes it easy to cancel or reschedule appointments:</p>
+            <ul>
+                <li>View your upcoming appointments.</li>
+                <li>Cancel an appointment with a single click if you are unable to attend.</li>
+                <li>Reschedule to a more convenient time if needed.</li>
+            </ul>
+            <h4>Benefits:</h4>
+            <ul>
+                <li>Manage your appointments with ease.</li>
+                <li>No hassle when life gets in the way.</li>
+                <li>Keep your health care on track without stress.</li>
+            </ul>
+        </div>
+
+        <!-- Finding Doctors & Hospitals -->
+        <div class="service-detail">
+            <h3>Find Doctors & Hospitals</h3>
+            <p>Finding the right healthcare provider is crucial. With HealthLink, you can:</p>
+            <ul>
+                <li>Search for doctors by specialty, experience, and patient ratings.</li>
+                <li>Browse hospitals in your area based on your disease or condition.</li>
+                <li>View detailed profiles of healthcare providers, including reviews, expertise, and availability.</li>
+            </ul>
+            <h4>Benefits:</h4>
+            <ul>
+                <li>Make informed decisions based on ratings and reviews.</li>
+                <li>Find the right healthcare provider that matches your needs.</li>
+                <li>Access doctors and hospitals based on your location and requirements.</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 HealthLink | All rights reserved.</p>
+            <ul class="social-media">
+                <li><a href="#"><i class="bi bi-facebook"></i></a></li>
+                <li><a href="#"><i class="bi bi-twitter"></i></a></li>
+                <li><a href="#"><i class="bi bi-linkedin"></i></a></li>
+                <li><a href="#"><i class="bi bi-instagram"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
 </body>
 </html>

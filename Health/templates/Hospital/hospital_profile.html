@@ -1,10 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Hospital Profile</h2>
+
+    <div class="row">
+        <div class="col-md-4 text-center">
+            {% if hospital.profile_picture %}
+                <img src="{{ hospital.profile_picture.url }}" 
+                     alt="Hospital Profile Picture" 
+                     class="img-thumbnail mb-3 rounded-circle" 
+                     width="200" height="200">
+            {% else %}
+                <i class="bi bi-building" style="font-size: 200px; color: #ccc;"></i>
+            {% endif %}
+        </div>
+
+        <div class="col-md-8">
+            <h3>{{ hospital.name }}</h3>
+            <p><strong>Email:</strong> {{ hospital.email }}</p>
+            <p><strong>Contact Number:</strong> {{ hospital.contact_number }}</p>
+            <p><strong>Address:</strong> {{ hospital.address }}</p>
+            <p><strong>City:</strong> {{ hospital.city }}</p>
+            <p><strong>Website:</strong> <a href="{{ hospital.website }}" target="_blank">{{ hospital.website }}</a></p>
+            <p><strong>Established Date:</strong> {{ hospital.established_date }}</p>
+
+            <a href="{% url 'edit_hospital_profile' %}" class="btn btn-primary">Edit Profile</a>
+
+        </div>
+    </div>
+</div>
+
+{% include 'Hospital/footer.html' %}

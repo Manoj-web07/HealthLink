@@ -124,3 +124,38 @@ var swiper = new Swiper('.swiper-container', {
     }
 </script>
 
+<script>
+    // Show modal when clicking on "Book Appointment" button
+    document.getElementById('bookAppointmentBtn').addEventListener('click', function() {
+        var myModal = new bootstrap.Modal(document.getElementById('appointmentRequestModal'));
+        myModal.show();
+    });
+
+    // Handle form submission using AJAX
+    document.getElementById('appointmentRequestForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        var appointmentDate = document.getElementById('appointmentDate').value;
+        formData.append('appointment_date', appointmentDate);
+
+        fetch('{% url "appointment_request" %}', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Appointment request submitted successfully!');
+                // Close the modal
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('appointmentRequestModal'));
+                myModal.hide();
+            } else {
+                alert('Error submitting appointment request. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>

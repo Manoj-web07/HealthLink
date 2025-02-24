@@ -1,12 +1,19 @@
 {% include 'Doctors/header.html' %}
 
 <div class="container mt-4">
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
     <!-- Overview Section -->
     <div class="row">
         <!-- Appointments Card -->
         <div class="col-md-4">
-            <div class="card bg-light shadow-sm">
+            <div class="card cart bg-light shadow-sm">
                 <div class="card-body text-center">
                     <h5 class="card-title"><i class="fas fa-calendar-check"></i> Appointments</h5>
                     <p>You have <strong>{{ upcoming_appointments }}</strong> appointments today.</p>
@@ -17,7 +24,7 @@
 
         <!-- New Patients Card -->
         <div class="col-md-4">
-            <div class="card bg-light shadow-sm">
+            <div class="card cart bg-light shadow-sm">
                 <div class="card-body text-center">
                     <h5 class="card-title"><i class="fas fa-user-plus"></i> New Patients</h5>
                     <p><strong>{{ new_patients }}</strong> new patient registrations.</p>
@@ -29,7 +36,7 @@
 
         <!-- Profile Overview Card -->
         <div class="col-md-4">
-            <div class="card bg-light shadow-sm">
+            <div class="card cart bg-light shadow-sm">
                 <div class="card-body text-center">
                     <h5 class="card-title"><i class="fas fa-user-md"></i> Profile Overview</h5>
                     <p>Review and update your profile details.</p>
@@ -44,7 +51,7 @@
     <div class="row">
         <!-- Average Rating Card -->
         <div class="col-md-6">
-            <div class="card shadow-sm">
+            <div class="card cart shadow-sm">
                 <div class="card-body text-center">
                     <h5 class="card-title"><i class="fas fa-star"></i> Average Rating</h5>
                     <p class="display-5">{{ average_rating }} / 5</p>
@@ -54,7 +61,7 @@
         <h4 class="mt-5">Patient Comments</h4>
 <div class="list-group">
     {% for review in patient_comments %}
-        <div class="list-group-item">
+        <div class="list-group-item cart">
             <h5 class="mb-1">{{ review.patient__name }}</h5> <!-- Patient's name -->
             <p class="mb-1"><strong>Comment:</strong> {{ review.comment }}</p>
             <small class="text-muted">Reviewed on: {{ review.created_at|date:"F j, Y" }}</small> <!-- Display review date -->

@@ -1,10 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+
+<div class="container mt-4">
+    <h2>Pending Reschedule Requests</h2>
+
+    <!-- Display Success or Info Messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Appointment Table with Responsiveness -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">Requested Date</th>
+                    <th scope="col">Treatment Type</th>
+                    <th scope="col">Doctor</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.patient.name }}</td>
+                        <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                        <td>{{ appointment.treatment_type }}</td>
+                        <td>{{ appointment.doctor.name }}</td>
+                        <td>
+                            <span class="badge bg-warning">{{ appointment.status }}</span>
+                        </td>
+                        <td>
+    <!-- Wrapping buttons in a responsive container -->
+    <div class="d-flex flex-column flex-sm-row">
+        <!-- Button to trigger the reschedule modal -->
+        <button class="btn btn-primary btn-sm mb-2 mb-sm-0" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ appointment.id }}">Reschedule</button>
+
+        <!-- Cancel Button with a Form -->
+        <form method="POST" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline-block; margin-left: 10px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm mb-2 mb-sm-0" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</button>
+        </form>
+    </div>
+</td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for Rescheduling an Appointment -->
+{% for appointment in appointments %}
+<div class="modal fade text-dark" id="rescheduleModal{{ appointment.id }}" tabindex="-1" aria-labelledby="rescheduleModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rescheduleModalLabel{{ appointment.id }}">Reschedule Appointment for {{ appointment.patient.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'rescheduled_appointments' appointment.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="new_appointment_date" class="form-label">New Appointment Date</label>
+                        <input type="date" class="form-control" id="new_appointment_date" name="new_appointment_date"
+                               value="{{ appointment.appointment_date|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointment_time" class="form-label">New Appointment Time</label>
+                        <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Reschedule Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% include 'Hospital/footer.html' %}

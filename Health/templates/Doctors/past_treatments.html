@@ -2,6 +2,13 @@
 {% block content %}
     <div class="container mt-4">
         <h3>Past Treatments</h3>
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'past_treatment' %}" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search patients by name" value="{{ request.GET.search }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
         <table class="table table-bordered">
             <thead>
                 <tr>

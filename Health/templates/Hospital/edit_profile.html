@@ -1,10 +1,193 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'Hospital/header.html' %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Feedback Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <!-- Profile Picture Section -->
+            <div class="col-md-4 text-center">
+                <label for="profile_picture" style="cursor: pointer;">
+                    {% if hospital.profile_picture %}
+                        <img src="{{ hospital.profile_picture.url }}"
+                             alt="Profile Picture"
+                             class="img-thumbnail mb-3 rounded-circle profile-img"
+                             width="200"
+                             height="200">
+                    {% else %}
+                        <i class="bi bi-building"
+                           style="font-size: 200px; color: #ccc;"></i>
+                    {% endif %}
+                </label>
+
+                <!-- Hidden File Input -->
+                <input type="file"
+                       class="form-control d-none"
+                       id="profile_picture"
+                       name="profile_picture"
+                       accept="image/*">
+
+                <label for="profile_picture" class="form-label mt-3 d-none">Profile Picture</label>
+            </div>
+
+            <style>
+                .profile-img {
+                    object-fit: cover;
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    object-position: top center;
+                }
+            </style>
+
+            <!-- Hospital Details Section -->
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Hospital Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ hospital.name }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="contact_number" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ hospital.contact_number }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ hospital.email }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea class="form-control" id="address" name="address">{{ hospital.address }}</textarea>
+                </div>
+
+                <!-- City Autocomplete -->
+                <div class="mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="hidden" id="city_id" name="city" value="{{ doctor.city.id }}">
+                    <input type="text" class="form-control" id="city" autocomplete="off" value="{{ doctor.city.name }}">
+                    <div id="city-list" class="list-group" style="display:none;"></div>
+                </div>
+                <!-- Add City Button -->
+<div id="addCityBtnContainer" class="text-end mt-4" style="display: none;">
+    <button type="button" class="btn btn-success" onclick="addCity()">Add New City</button>
+</div>
+               <div class="mb-3">
+    <label for="website" class="form-label">Website</label>
+    <input type="url" class="form-control" id="website" name="website" value="">
+</div>
+
+
+                <div class="mb-3">
+                    <label for="established_date" class="form-label">Established Date</label>
+                    <input type="date" class="form-control" id="established_date" name="established_date" value="{{ hospital.established_date|date:'Y-m-d' }}">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4 mb-2">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+<!-- Add City Modal -->
+<div class="modal fade text-dark" id="addCityModal" tabindex="-1" aria-labelledby="addCityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCityModalLabel">Add New City</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCityForm" method="POST" action="{% url 'add_city' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="new_city_name" class="form-label">City Name</label>
+                        <input type="text" class="form-control" id="new_city_name" name="name" required>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Add City</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.getElementById('city').addEventListener('input', function() {
+    var input = this.value;
+    var list = document.getElementById('city-list');
+    list.innerHTML = ''; // Clear the previous suggestions
+
+    if (input.length > 0) {
+        fetch(`/search_cities/?query=${input}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cities.length > 0) {
+                    list.style.display = 'block'; // Show the list
+                    data.cities.forEach(city => {
+                        var item = document.createElement('a');
+                        item.href = '#';
+                        item.classList.add('list-group-item', 'list-group-item-action');
+                        item.textContent = city.name;
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            document.getElementById('city').value = city.name; // Set input value
+                            document.getElementById('city_id').value = city.id; // Set the city ID
+                            list.style.display = 'none'; // Hide list
+                        });
+                        list.appendChild(item);
+                    });
+                    document.getElementById('addCityBtnContainer').style.display = 'none'; // Hide add button if matches are found
+                } else {
+                    list.style.display = 'none'; // Hide list if no results
+                    document.getElementById('addCityBtnContainer').style.display = 'block'; // Show add button if no matches
+                }
+            });
+    } else {
+        list.style.display = 'none'; // Hide list if no input
+        document.getElementById('addCityBtnContainer').style.display = 'none'; // Hide add button
+    }
+});
+
+function addCity() {
+    var cityName = prompt("Enter the name of the new city:");
+    if (cityName) {
+        fetch('/add_city/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ name: cityName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('City added successfully!');
+                document.getElementById('city').value = cityName; // Set the city input to the newly added city name
+                document.getElementById('city_id').value = data.city_id; // Set the city ID from the server response
+            } else {
+                alert('Error adding city.');
+            }
+        });
+    }
+}
+
+</script>
+{% include 'Hospital/footer.html' %}

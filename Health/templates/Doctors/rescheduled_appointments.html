@@ -7,7 +7,6 @@
             <tr>
                 <th>#</th>
                 <th>Patient</th>
-                <th>Original Date</th>
                 <th>New Date</th>
                 <th>Status</th>
             </tr>
@@ -17,7 +16,6 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ appointment.patient.name }}</td> <!-- Patient Name -->
-                    <td>{{ appointment.original_date|date:"F j, Y, g:i a" }}</td> <!-- Original Appointment Date -->
                     <td>{{ appointment.appointment_date|date:"F j, Y, g:i a" }}</td> <!-- New Rescheduled Date -->
                     <td><span class="badge bg-warning">Rescheduled</span></td>
                 </tr>

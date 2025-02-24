@@ -2,6 +2,19 @@
 
 <div class="container mt-4">
     <h3>Scheduled Appointments</h3>
+    <form method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" name="search" placeholder="Search by Patient Name" value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-4">
+                <input type="date" class="form-control" name="appointment_date" placeholder="Search by Appointment Date" value="{{ request.GET.appointment_date }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </div>
+    </form>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -22,8 +35,15 @@
                         <span class="badge bg-success">Upcoming</span>
                     </td>
                     <td>
-                        <a href="#" class="btn btn-danger btn-sm">Cancel</a>
-                        <a href="#" class="btn btn-warning btn-sm">Reschedule</a>
+                         <!-- Action Buttons -->
+                            {% if appointment.status == "Scheduled" %}
+                                <a href="#" class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#rescheduleModal{{ appointment.id }}">
+                                    Reschedule
+                                </a>
+                                <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal{{ appointment.id }}">
+                                    Cancel
+                                </a>
+                            {% endif %}
                     </td>
                 </tr>
             {% empty %}
@@ -34,5 +54,50 @@
         </tbody>
     </table>
 </div>
+
+<!-- Reschedule Appointment Modal -->
+{% for appointment in upcoming_appointments %}
+<div class="modal fade text-dark" id="rescheduleModal{{ appointment.id }}" tabindex="-1" aria-labelledby="rescheduleModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rescheduleModalLabel{{ appointment.id }}">Reschedule Appointment for Dr. {{ appointment.doctor.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'doctor_reschedule_appointment' appointment.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="new_date" class="form-label">New Appointment Date</label>
+                        <input type="date" class="form-control" id="new_date" name="appointment_date" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Reschedule</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Cancel Appointment Modal -->
+{% for appointment in upcoming_appointments %}
+<div class="modal fade text-dark" id="cancelModal{{ appointment.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel{{ appointment.id }}">Cancel Appointment for Dr. {{ appointment.doctor.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <p>Are you sure you want to cancel your appointment with Dr. {{ appointment.doctor.name }} scheduled on {{ appointment.appointment_date|date:"M d, Y H:i" }}?</p>
+                <form method="POST" action="{% url 'doctor_cancel_appointment' appointment.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% include 'Doctors/footer.html' %}
