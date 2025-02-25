@@ -39,6 +39,11 @@
                                     {% endif %}
                                 {% endif %}
                             </p>
+
+                            <!-- Review Button -->
+                            {% if appointment.status == 'Completed' %}
+                                <a href="{% url 'reviews' %}?appointment_id={{ appointment.id }}&doctor_id={{ appointment.doctor.id }}&hospital_id={{ appointment.hospital.id }}&patient_id={{ patient.id }}" class="btn btn-primary">Leave a Review</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -86,7 +86,10 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('services/', views.services, name='services'),
     path('contact/', views.contact_us, name='contact_us'),
- ]
+    path('submit_review_or_feedback/', views.submit_review_or_feedback, name='submit_review_or_feedback'),
+
+    path('reviews/', views.reviews, name='reviews')
+]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT)

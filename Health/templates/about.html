@@ -7,29 +7,31 @@
     <title>About Us - HealthLink</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-
-        h1, h2, h3, p {
+        body {
             font-family: 'Roboto', sans-serif;
-
+            margin: 0;
+            padding: 0;
         }
 
         /* Header Styling */
         .header {
-        z-index: 2000;
+            z-index: 2000;
             position: sticky;
             top: 0;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.9);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .header .logo img {
             height: 50px;
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: #ffff;
             border-radius: 5px;
         }
 
@@ -37,10 +39,6 @@
             list-style: none;
             display: flex;
             gap: 30px;
-        }
-
-        .header ul li {
-            font-size: 1rem;
         }
 
         .header ul li a {
@@ -54,9 +52,11 @@
             color: #ffbb33;
         }
 
-        /* About Section */
+        /* Hero Section */
         .about-section {
-            padding: 80px 20px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            padding: 100px 20px;
             text-align: center;
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
         }
@@ -65,6 +65,7 @@
             font-size: 3.5rem;
             margin-bottom: 20px;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .about-container p {
@@ -72,24 +73,13 @@
             max-width: 900px;
             margin: 0 auto 40px;
             line-height: 1.6;
-            color: #600;
-        }
-
-        .about-container h2 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 20px;
-            text-decoration: underline;
         }
 
         /* Team Section */
         .team-section {
-        color : black;
-            margin-top: 60px;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
+            padding: 60px 20px;
+            background-color: #fff;
+            text-align: center;
         }
 
         .team-member {
@@ -100,26 +90,25 @@
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 30px;
-            font-size: 1rem;
-            color: #666;
+            margin: 20px auto;
         }
 
         .team-member:hover {
-            transform: scale(1.05);
+            transform: translateY(-10px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
 
         .team-member img {
-            width: 60%;
-            height: 300px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 20px;
+            border: 4px solid #4facfe;
         }
 
         .member-info h3 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-top: 10px;
             color: #333;
             font-weight: bold;
@@ -128,14 +117,13 @@
         .member-info p {
             font-size: 1rem;
             color: #666;
-            margin-top: 10px;
             line-height: 1.6;
         }
 
-        /* Vision & Values Section */
+        /* Vision & Values */
         .vision-section,
         .values-section {
-            margin-top: 60px;
+            padding: 60px 20px;
             text-align: center;
         }
 
@@ -144,51 +132,48 @@
             font-size: 2.5rem;
             margin-bottom: 30px;
             color: #333;
+            text-transform: uppercase;
         }
 
-       .vision-section p,
-.values-section ul {
-    font-size: 1.2rem;
-    color: #555;
-    line-height: 1.7;
-}
-
+        .vision-section p,
+        .values-section ul {
+            font-size: 1.2rem;
+            color: #555;
+            line-height: 1.7;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
         .values-section ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
-
         }
 
         .values-section ul li {
             margin-bottom: 20px;
-
         }
 
         .values-section ul li strong {
             color: #3d76f0;
-        text-decoration: none; /* Corrected this line */
         }
 
         /* Footer */
         footer {
-    background-color: #333; /* White background */
-    color: #ffffff; /* Dark text color for readability */
-    padding: 40px 20px; /* Adequate padding for spacing */
-    text-align: center; /* Centered content for the footer */
-    font-size: 1rem; /* Standard font size for footer content */
-    border-top: 2px solid #eee; /* Light border at the top of the footer for separation */
-}
+            background-color: #333;
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
 
-.footer-content {
-    margin-bottom: 20px; /* Space between text and social media icons */
-}
+        .footer-content p {
+            margin-bottom: 20px;
+        }
 
         .social-media {
             list-style: none;
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 20px;
         }
 
         .social-media li a {
@@ -220,72 +205,55 @@
         <div class="about-container">
             <h1>About Us</h1>
             <p>Welcome to <strong>HealthLink</strong>, a revolutionary healthcare platform designed to make healthcare more accessible, transparent, and efficient. Our mission is to connect patients and healthcare providers in real-time to offer immediate solutions for better health outcomes.</p>
-
-            <h2>What We Do</h2>
-            <p>At HealthLink, we are proud to offer a wide range of services, including:</p>
-            <ul>
-                <li><strong>Instant Doctor Appointments:</strong> Book online consultations with licensed doctors at your convenience, anytime, anywhere.</li>
-                <li><strong>Hospital Recommendations:</strong> Find the best hospitals based on disease, ratings, and proximity to you.</li>
-                <li><strong>Telemedicine:</strong> Access consultations via video or audio calls for a more comfortable experience.</li>
-                <li><strong>Health Monitoring:</strong> Track your medical records and history online for easy access and management.</li>
-                <li><strong>Emergency Services:</strong> Connect with emergency healthcare providers instantly in case of urgent medical needs.</li>
-            </ul>
-
-            <h2>Our Approach</h2>
-            <p>We understand that healthcare should be simple, reliable, and personalized. Our platform is built around the core values of transparency, user convenience, and cutting-edge technology to deliver an experience that is efficient and trustworthy. Whether it's a minor check-up or a life-threatening emergency, HealthLink is your bridge to better health.</p>
         </div>
+    </section>
 
-        <div class="team-section">
-            <h2>Meet Our Expert Team</h2>
-            <p>Our talented team works tirelessly to bring innovative solutions and exceptional service to our users. Learn more about our key team members below:</p>
-
-            <!-- Janak Singh - Cloud Computing & Cyber Security Expert -->
-            <div class="team-member">
-                <img src="{% static 'image/webp/janak.webp' %}" alt="Janak Singh">
-                <div class="member-info">
-                    <h3>Janak Singh</h3>
-                    <p>Cloud Computing & Cyber Security Expert - Janak is a cybersecurity Expert, ensuring that all user data is protected using the latest security protocols. His expertise in cloud computing ensures that HealthLink is scalable, secure, and ready for future innovations.</p>
-                </div>
-            </div>
-
-            <!-- Manoj Kumar - Full Stack Developer -->
-            <div class="team-member">
-                <img src="{% static 'image/webp/manoj.webp' %}" alt="Manoj Kumar">
-                <div class="member-info">
-                    <h3>Manoj Kumar</h3>
-                    <p>Full Stack Developer - Manoj is the backbone of HealthLink’s web platform. He builds seamless front-end and back-end systems that make the user experience easy and smooth, ensuring that every feature works flawlessly for users.</p>
-                </div>
+    <section class="team-section">
+        <h2>Meet Our Expert Team</h2>
+        <div class="team-member">
+            <img src="{% static 'image/webp/janak.webp' %}" alt="Janak Singh">
+            <div class="member-info">
+                <h3>Janak Singh</h3>
+                <p>Cloud Computing & Cyber Security Expert - Janak ensures that all user data is protected using the latest security protocols. His expertise in cloud computing ensures that HealthLink is scalable, secure, and ready for future innovations.</p>
             </div>
         </div>
-
-        <div class="vision-section">
-            <h2>Our Vision</h2>
-            <p>Our vision is to empower individuals to take charge of their health by providing them with the right tools and resources at the right time. We aim to break down the barriers of healthcare access and create a digital ecosystem that improves healthcare outcomes for people all over the world.</p>
+        <div class="team-member">
+            <img src="{% static 'image/webp/manoj.webp' %}" alt="Manoj Kumar">
+            <div class="member-info">
+                <h3>Manoj Kumar</h3>
+                <p>Full Stack Developer - Manoj is the backbone of HealthLink’s web platform, ensuring seamless front-end and back-end systems for a flawless user experience.</p>
+            </div>
         </div>
+    </section>
 
-        <div class="values-section">
-            <h2>Our Values</h2>
-            <p>We uphold the highest standards in everything we do. Our core values shape our actions and decisions every day:</p>
-            <ul>
-                <li><strong>Innovation:</strong> We believe in the power of technology to transform healthcare, constantly striving to develop creative solutions.</li>
-                <li><strong>Integrity:</strong> We are committed to honesty and transparency in all our interactions, building trust with patients and healthcare providers alike.</li>
-                <li><strong>Compassion:</strong> We understand the human side of healthcare, and we always put patient care at the heart of everything we do.</li>
-                <li><strong>Excellence:</strong> We aim for excellence in every aspect of our services, ensuring the highest quality and service for our users.</li>
-            </ul>
-        </div>
+    <section class="vision-section">
+        <h2>Our Vision</h2>
+        <p>Empowering individuals to take charge of their health by providing them with the right tools and resources at the right time, breaking down barriers to healthcare access worldwide.</p>
+    </section>
+
+    <section class="values-section">
+        <h2>Our Values</h2>
+        <ul>
+            <li><strong>Innovation:</strong> Harnessing technology to transform healthcare.</li>
+            <li><strong>Integrity:</strong> Building trust through honesty and transparency.</li>
+            <li><strong>Compassion:</strong> Putting patient care at the heart of everything.</li>
+            <li><strong>Excellence:</strong> Striving for the highest quality in all services.</li>
+        </ul>
     </section>
 
     <footer>
         <div class="footer-content">
             <p>&copy; 2025 HealthLink | All rights reserved.</p>
             <ul class="social-media">
-                <li><a href="#"><i class="bi bi-facebook"></i></a></li>
-                <li><a href="#"><i class="bi bi-twitter"></i></a></li>
-                <li><a href="#"><i class="bi bi-linkedin"></i></a></li>
-                <li><a href="#"><i class="bi bi-instagram"></i></a></li>
+                <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
             </ul>
         </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

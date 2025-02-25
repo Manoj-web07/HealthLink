@@ -1,85 +1,70 @@
 {% include 'Doctors/header.html' %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="text-center">
+        <h2>Edit Profile</h2>
+</div>
+        <hr>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-<div class="container mt-4">
-    <h2 class="mb-4">Edit Profile</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+            <!-- Feedback Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-        <!-- Feedback Messages -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+            <div class="row">
+                <!-- Profile Picture Section -->
+                <div class="col-md-3 text-center">
+                    <label for="profile_picture" style="cursor: pointer;">
+                        {% if doctor.profile_picture %}
+                            <img src="{{ doctor.profile_picture.url }}" alt="Profile Picture" class="rounded-circle img-thumbnail" width="200" height="200">
+                        {% else %}
+                            <i class="bi bi-person-circle" style="font-size: 200px; color: #ccc;"></i>
+                        {% endif %}
+                    </label>
 
-        <div class="row">
-            <!-- Profile Picture Section -->
-            <div class="col-md-4 text-center">
-                <label for="profile_picture" style="cursor: pointer;">
-                    {% if doctor.profile_picture %}
-                        <img src="{{ doctor.profile_picture.url }}"
-                             alt="Profile Picture"
-                             class="img-thumbnail mb-3 rounded-circle profile-img"
-                             width="200"
-                             height="200">
-                    {% else %}
-                        <i class="bi bi-person-circle"
-                           style="font-size: 200px; color: #ccc;"></i>
-                    {% endif %}
-                </label>
-
-                <!-- Hidden File Input -->
-                <input type="file"
-                       class="form-control d-none"
-                       id="profile_picture"
-                       name="profile_picture"
-                       accept="image/*">
-                <label for="profile_picture" class="form-label mt-3 d-none">Profile Picture</label>
-            </div>
-
-            <style>
-                .profile-img {
-                    object-fit: cover;
-                    width: 200px;
-                    height: 200px;
-                    border-radius: 50%;
-                    object-position: top center;
-                }
-            </style>
-
-            <!-- Profile Details Section -->
-            <div class="col-md-8">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" value="{{ doctor.name }}">
+                    <!-- Hidden File Input -->
+                    <input type="file" class="form-control d-none" id="profile_picture" name="profile_picture" accept="image/*">
+                    <label for="profile_picture" class="form-label mt-3 d-none">Profile Picture</label>
                 </div>
 
-                <div class="mb-3">
-                    <label for="gender" class="form-label">Gender</label>
-                    <select class="form-control" id="gender" name="gender">
-                        <option value="M" {% if doctor.gender == 'M' %}selected{% endif %}>Male</option>
-                        <option value="F" {% if doctor.gender == 'F' %}selected{% endif %}>Female</option>
-                    </select>
-                </div>
+                <!-- Doctor's Information -->
+                <div class="col-md-9">
+                    <h3>Personal Details</h3>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ doctor.name }}">
+                    </div>
 
-                <div class="mb-3">
-                    <label for="contact_number" class="form-label">Contact Number</label>
-                    <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ doctor.contact_number }}">
-                </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select class="form-control" id="gender" name="gender">
+                            <option value="M" {% if doctor.gender == 'M' %}selected{% endif %}>Male</option>
+                            <option value="F" {% if doctor.gender == 'F' %}selected{% endif %}>Female</option>
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ doctor.email }}">
-                </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ doctor.email }}">
+                    </div>
 
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <textarea class="form-control" id="address" name="address">{{ doctor.address }}</textarea>
-                </div>
+                    <div class="mb-3">
+                        <label for="contact_number" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ doctor.contact_number }}">
+                    </div>
 
-                <!-- City Autocomplete -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address">{{ doctor.address }}</textarea>
+                    </div>
+
+                   <!-- City Autocomplete -->
                 <div class="mb-3">
                     <label for="city" class="form-label">City</label>
                     <input type="hidden" id="city_id" name="city" value="{{ doctor.city.id }}">
@@ -92,7 +77,40 @@
                     <button type="button" class="btn btn-success" onclick="addCity()">Add New City</button>
                 </div>
 
-                <!-- Hospital Autocomplete -->
+
+                    <div class="mb-3">
+                        <label for="qualification" class="form-label">Qualifications</label>
+                        <input type="text" class="form-control" id="qualification" name="qualification" value="{{ doctor.qualification }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="experience_years" class="form-label">Experience (Years)</label>
+                        <input type="number" class="form-control" id="experience_years" name="experience_years" value="{{ doctor.experience_years }}">
+                    </div>
+
+                    <h3 class="mt-4">Professional Information</h3>
+                    <div class="mb-3">
+                        <label for="specialty" class="form-label">Specialty</label>
+                        <input type="text" class="form-control" id="specialty" name="specialty" value="{{ doctor.specialty }}">
+                    </div>
+
+                    <div>
+        <label for="treatment_type">Treatment Type:</label>
+        <select name="treatment_type">
+            {% for value, label in doctor.TREATMENT_CHOICES %}
+                <option value="{{ value }}" {% if doctor.treatment_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div><br>
+          <div>
+        <label for="consultation_type">Consultation Type:</label>
+        <select name="consultation_type">
+            {% for value, label in doctor.CONSULTATION_TYPES %}
+                <option value="{{ value }}" {% if doctor.consultation_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div><br>
+<!-- Hospital Autocomplete -->
                 <div class="mb-3">
                     <label for="hospital" class="form-label">Hospital</label>
                     <input type="hidden" id="hospital_id" name="hospital" value="{{ doctor.hospital.id }}">
@@ -105,27 +123,42 @@
                     <a href="registration" class="btn btn-success">Add Hospital</a>
                 </div>
 
-                <div class="mb-3">
-                    <label for="specialty" class="form-label">Specialty</label>
-                    <input type="text" class="form-control" id="specialty" name="specialty" value="{{ doctor.specialty }}">
-                </div>
+                    <h3 class="mt-4">Availability</h3>
+                    <div class="mb-3">
+                        <label for="days_available" class="form-label">Available Days</label>
+                        <select class="form-control" id="days_available" name="days_available" multiple>
+                            {% for day in all_days %}
+                                <option value="{{ day.id }}" {% if day in doctor.days_available.all %}selected{% endif %}>{{ day.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="qualification" class="form-label">Qualifications</label>
-                    <input type="text" class="form-control" id="qualification" name="qualification" value="{{ doctor.qualification }}">
-                </div>
+                    <div class="mb-3">
+                        <label for="availability_start_time" class="form-label">Start Time</label>
+                        <input type="time" class="form-control" id="availability_start_time" name="availability_start_time" value="{{ doctor.availability_start_time|time:'H:i' }}">
+                    </div>
 
-                <div class="mb-3">
-                    <label for="experience_years" class="form-label">Experience (Years)</label>
-                    <input type="number" class="form-control" id="experience_years" name="experience_years" value="{{ doctor.experience_years }}">
-                </div>
+                    <div class="mb-3">
+                        <label for="availability_end_time" class="form-label">End Time</label>
+                        <input type="time" class="form-control" id="availability_end_time" name="availability_end_time" value="{{ doctor.availability_end_time|time:'H:i' }}">
+                    </div>
 
-                <div class="mb-3">
-                    <label for="about" class="form-label">About</label>
-                    <textarea class="form-control" id="about" name="about" rows="4">{{ doctor.about }}</textarea>
-                </div>
+                    <h3 class="mt-4">Languages Spoken</h3>
+                    <div class="mb-3 ">
+                        <label for="languages_spoken" class="form-label">Languages Spoken</label>
+                        <select class="form-control text-dark" id="languages_spoken" name="languages_spoken" multiple>
+                            {% for language in all_languages %}
+                                <option value="{{ language.id }}" {% if language in doctor.languages_spoken.all %}selected{% endif %}>{{ language.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <!-- Diseases Section -->
+                    <h3 class="mt-4">About</h3>
+                    <div class="mb-3">
+                        <textarea class="form-control" id="about" name="about">{{ doctor.about }}</textarea>
+                    </div>
+
+              <!-- Diseases Section -->
                 <h3>Diseases Treated</h3>
 
                 <!-- Search Input for diseases -->
@@ -155,11 +188,13 @@
             </div>
         </div>
 
-        <div class="text-end mt-4 mb-2">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-    </form>
-</div>
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
 <!-- Add City Modal -->
 <div class="modal fade text-dark" id="addCityModal" tabindex="-1" aria-labelledby="addCityModalLabel" aria-hidden="true">
@@ -330,3 +365,5 @@
         }
     });
 </script>
+{% endblock %}
+{% include 'Doctors/footer.html' %}

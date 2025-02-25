@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.paginator import Paginator
 import json
+from django.urls import reverse
 from django.db import IntegrityError
 from django.db.models import Q
+from urllib.parse import urlencode
 from django.templatetags.static import static
 import os
 from django.utils.html import strip_tags
@@ -19,7 +21,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from geopy.distance import geodesic
 from django.contrib.auth.hashers import check_password, make_password
-from .models import Patient, Doctor, Hospital,Facility,Appointment,City,Review, HospitalFeedback,Staff,Treatment,Disease,Department
+from .models import Patient, Doctor, Hospital,Facility,Appointment,City,Review,Language,DayOfWeek ,HospitalFeedback,Staff,Treatment,Disease,Department
 from django.utils.timezone import make_aware
 from datetime import datetime,timedelta
 from django.http import Http404
@@ -860,79 +862,66 @@ def edit_doctor_profile(request):
     except Doctor.DoesNotExist:
         messages.error(request, "Doctor not found.")
         return redirect('login')
-
-    diseases = Disease.objects.all()
-
+        # Handle the profile update on POST request
     if request.method == 'POST':
-        # Handling form submission for doctor profile update
-        name = request.POST.get('name')
-        gender = request.POST.get('gender')
-        contact_number = request.POST.get('contact_number')
-        email = request.POST.get('email')
-        address = request.POST.get('address')
-        specialty = request.POST.get('specialty')
-        qualification = request.POST.get('qualification')
-        experience_years = request.POST.get('experience_years')
-        about = request.POST.get('about')
+        # Process the incoming data and update the doctor profile
+        doctor.name = request.POST.get('name', doctor.name)
+        doctor.gender = request.POST.get('gender', doctor.gender)
+        doctor.email = request.POST.get('email', doctor.email)
+        doctor.contact_number = request.POST.get('contact_number', doctor.contact_number)
+        doctor.address = request.POST.get('address', doctor.address)
+        doctor.qualification = request.POST.get('qualification', doctor.qualification)
+        doctor.experience_years = request.POST.get('experience_years', doctor.experience_years)
+        doctor.specialty = request.POST.get('specialty', doctor.specialty)
+        doctor.treatment_type = request.POST.get('treatment_type', doctor.treatment_type)
+        doctor.consultation_type = request.POST.get('consultation_type', doctor.consultation_type)
 
-        # Handle city selection (assign city name as a string to the CharField)
-        selected_city_id = request.POST.get('city')
-        if selected_city_id:
-            try:
-                selected_city = City.objects.get(id=selected_city_id)
-                doctor.city = selected_city.name  # Assign the city name (string) to the CharField
-            except City.DoesNotExist:
-                messages.error(request, "Selected city does not exist.")
-                return redirect('edit_doctor_profile')
-        else:
-            messages.error(request, "Please select a valid city.")
-            return redirect('edit_doctor_profile')
-        # Handle single hospital selection (foreign key)
-        selected_hospital_id = request.POST.get('hospital')
-        if selected_hospital_id:
-            try:
-                selected_hospital = Hospital.objects.get(id=selected_hospital_id)
-                doctor.hospital = selected_hospital  # Assign the hospital object to the ForeignKey field
-            except Hospital.DoesNotExist:
-                messages.error(request, "Selected hospital does not exist.")
-                return redirect('edit_doctor_profile')
-        else:
-            messages.error(request, "Please select a valid hospital.")
-            return redirect('edit_doctor_profile')
+        # If there's a new profile picture, handle the upload
+        if request.FILES.get('profile_picture'):
+            doctor.profile_picture = request.FILES.get('profile_picture')
 
+        # If the hospital was updated, handle it
+        hospital_id = request.POST.get('hospital')
+        if hospital_id:
+            doctor.hospital = Hospital.objects.get(id=hospital_id)
 
-        # Updating the profile picture
-        profile_picture = request.FILES.get('profile_picture')
-        if profile_picture:
-            doctor.profile_picture = profile_picture
-
-        # Updating other doctor details
-        doctor.name = name
-        doctor.gender = gender
-        doctor.contact_number = contact_number
-        doctor.email = email
-        doctor.address = address
-        doctor.specialty = specialty
-        doctor.qualification = qualification
-        doctor.experience_years = experience_years
-        doctor.about = about
-
-        # Saving the doctor instance after updating
+        # Save the updated doctor profile
         doctor.save()
 
-        # Handling diseases update (checked checkboxes)
-        selected_diseases = request.POST.getlist('diseases')
-        doctor.diseases.set(Disease.objects.filter(id__in=selected_diseases))
+        # Handle days available (multi-select)
+        days_available_ids = request.POST.getlist('days_available')
+        doctor.days_available.clear()
+        doctor.days_available.add(*DayOfWeek.objects.filter(id__in=days_available_ids))
 
-        # Adding a success message
-        messages.success(request, 'Your profile has been updated successfully.')
+        # Handle diseases (multi-select)
+        diseases_ids = request.POST.getlist('diseases')
+        doctor.diseases.clear()
+        doctor.diseases.add(*Disease.objects.filter(id__in=diseases_ids))
 
+        # Handle languages spoken (multi-select)
+        languages_ids = request.POST.getlist('languages_spoken')
+        doctor.languages_spoken.clear()
+        doctor.languages_spoken.add(*Language.objects.filter(id__in=languages_ids))
+
+        # Success message and redirect
+        messages.success(request, 'Profile updated successfully.')
+        # In views.py
         return redirect('doctor_profile', doctor_id=doctor.id)
+    # Or wherever you want to redirect after update
 
+        # If GET request, just render the profile page with the current data
+    else:
+        all_days = DayOfWeek.objects.all()
+        all_languages = Language.objects.all()
+        all_diseases = Disease.objects.all()
+        all_hospitals = Hospital.objects.all()
     # Handling GET request: pre-populating the profile form with existing data
     return render(request, 'Doctors/edit_profile.html', {
         'doctor': doctor,
-        'diseases': diseases
+        'diseases': all_diseases,
+        'all_days': all_days,
+        'all_languages': all_languages,
+        'hospitals': all_hospitals
     })
 
 def add_disease(request):
@@ -1268,7 +1257,14 @@ def cancel_appointment(request, appointment_id):
     if 'user_id' not in request.session:
         messages.error(request, "Please log in first.")
         return redirect('login')
+
+    # Fetch the appointment instance
     appointment = Appointment.objects.get(id=appointment_id)
+
+    # Ensure the logged-in user is associated with this appointment
+    if appointment.patient.id != request.session['user_id']:
+        messages.error(request, "You are not authorized to cancel this appointment.")
+        return redirect('appointments-request')
 
     # Update the status of the appointment to "Canceled"
     appointment.status = 'Canceled'
@@ -1277,9 +1273,30 @@ def cancel_appointment(request, appointment_id):
     # Show a success message
     messages.success(request, f"Appointment for {appointment.patient.name} has been canceled.")
 
+    # Send email notification to the patient
+    send_mail(
+        subject='Appointment Cancellation Confirmation',
+        message=f"Dear {appointment.patient.name},\n\n"
+                f"Your appointment with Dr. {appointment.doctor.name} on {appointment.date} has been canceled.\n"
+                f"Please contact us if you wish to reschedule or have any further questions.\n\n"
+                f"Best regards,\nThe HealthCare Team",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[appointment.patient.email],
+    )
+
+    # Optionally, send a notification to the doctor
+    send_mail(
+        subject='Appointment Cancellation Notification',
+        message=f"Dear Dr. {appointment.doctor.name},\n\n"
+                f"An appointment with {appointment.patient.name} on {appointment.date} has been canceled.\n"
+                f"Please check your schedule for updates.\n\n"
+                f"Best regards,\nThe HealthCare Team",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[appointment.doctor.email],
+    )
+
     # Redirect to the appointment request list after cancellation
     return redirect('appointments-request')
-
 
 def reschedule_appointment(request, appointment_id):
     appointment = Appointment.objects.get(id=appointment_id)
@@ -2124,7 +2141,7 @@ def change_hospital_password(request):
 
     return render(request, 'Hospital/hospital-password.html', {'hospital': hospital, 'active_page': 'settings'})
 def attend(request, appointment_id):
-    # Ensure the user is logged in and a doctor (optional check based on your logic)
+    # Ensure the user is logged in and is a doctor
     if 'user_id' not in request.session:
         return redirect('login')  # Redirect to login page if the doctor is not logged in
 
@@ -2132,7 +2149,7 @@ def attend(request, appointment_id):
         # Fetch the appointment object by ID
         appointment = Appointment.objects.get(id=appointment_id)
 
-        # Check if the current user is the doctor responsible for this appointment (optional)
+        # Check if the current user is the doctor responsible for this appointment
         if appointment.hospital.id != request.session['user_id']:
             messages.error(request, "You do not have permission to complete this appointment.")
             return redirect('upcoming_appointments')
@@ -2144,12 +2161,114 @@ def attend(request, appointment_id):
         # Provide feedback to the user
         messages.success(request, f"Appointment {appointment_id} has been marked as completed.")
 
+        # Get patient and doctor information
+        patient = appointment.patient
+        doctor = appointment.doctor
+        hospital = appointment.hospital
+
+        doctor_query = urlencode({'doctor_id': doctor.id, 'patient_id': patient.id, 'appointment_id': appointment.id})
+        hospital_query = urlencode(
+            {'hospital_id': hospital.id, 'patient_id': patient.id, 'appointment_id': appointment.id})
+
+        review_doctor_url = f"{reverse('submit_review_or_feedback')}?{doctor_query}"
+        review_hospital_url = f"{reverse('submit_review_or_feedback')}?{hospital_query}"
+        # Send an email to the patient with the review links
+        subject = "Appointment Completed - Please Review Your Doctor and Hospital"
+        message = f"Dear {patient.name},\n\nYour appointment with Dr. {doctor.name} has been marked as completed. We would appreciate it if you could take a moment to review both the doctor and the hospital:\n\n" \
+                  f"Review Doctor: {request.build_absolute_uri(review_doctor_url)}\n" \
+                  f"Review Hospital: {request.build_absolute_uri(review_hospital_url)}\n\n" \
+                  "Thank you for your feedback!\n\nBest Regards,\nYour Hospital Team"
+        from_email = 'your_email@example.com'
+        to_email = [patient.email]
+
+        send_mail(subject, message, from_email, to_email)
+
         # Redirect back to the upcoming appointments page
         return redirect('upcoming_appointments')
 
     except Appointment.DoesNotExist:
         messages.error(request, "Appointment not found.")
         return redirect('upcoming_appointments')
+
+
+def submit_review_or_feedback(request):
+    if 'user_id' not in request.session:
+        return redirect('login')  # Ensure the user is logged in before submitting feedback or review
+
+    patient = Patient.objects.get(id=request.session['user_id'])
+
+    # Retrieve the form data
+    hospital_id = request.GET.get('hospital_id')
+    doctor_id = request.GET.get('doctor_id')
+    patient_id = request.GET.get('patient_id')
+    appointment_id = request.GET.get('appointment_id')
+    rating = request.GET.get('rating')
+    feedback = request.GET.get('feedback', '')  # Optional feedback for hospital
+    comment = request.GET.get('comment', '')  # Optional comment for doctor
+
+    try:
+        # Ensure that hospital and doctor exist
+        hospital = Hospital.objects.get(id=hospital_id)
+        doctor = Doctor.objects.get(id=doctor_id)
+        appointment = Appointment.objects.get(id=appointment_id)
+
+        # Validate the rating is provided
+        if not rating:
+            messages.error(request, "Please provide a rating.")
+            return redirect('past_appointments')
+
+        # Save the hospital feedback if it's provided
+        if feedback and comment:
+            HospitalFeedback.objects.create(
+                hospital=hospital,
+                patient=patient,
+                rating=rating,
+                feedback=feedback
+            )
+            Review.objects.create(
+                doctor=doctor,
+                patient=patient,
+                rating=rating,
+                comment=comment
+            )
+            messages.success(request, "Thank you for providing feedback for the hospital and doctor!")
+
+        # Redirect to the patient dashboard after submission
+        return redirect('patient_dashboard')
+
+    except ValidationError as e:
+        messages.error(request, f"Validation Error: {e}")
+    except Hospital.DoesNotExist:
+        messages.error(request, "The hospital does not exist.")
+    except Doctor.DoesNotExist:
+        messages.error(request, "The doctor does not exist.")
+    except Appointment.DoesNotExist:
+        messages.error(request, "Appointment not found.")
+    except Exception as e:
+        messages.error(request, f"An unexpected error occurred: {str(e)}")
+
+    # Redirect back to the appointment details if there was an error
+    return redirect('past_appointments')
+
+
+def reviews(request):
+    if 'user_id' not in request.session:
+        return redirect('login')  # Ensure the user is logged in before submitting feedback or review
+
+    patient = Patient.objects.get(id=request.session['user_id'])
+
+    appointment_id = request.GET.get('appointment_id')
+    doctor_id = request.GET.get('doctor_id')
+    hospital_id = request.GET.get('hospital_id')
+    patient_id = request.GET.get('patient_id')
+
+    # If you need to use the appointment, doctor, or hospital in the view
+    appointment = Appointment.objects.get(id=appointment_id) if appointment_id else None
+    doctor = Doctor.objects.get(id=doctor_id) if doctor_id else None
+    hospital = Hospital.objects.get(id=hospital_id) if hospital_id else None
+
+    return render(request, 'Patients/reviews.html',
+                  {'patient': patient, 'appointment': appointment, 'doctor': doctor, 'hospital': hospital})
 def logout(request):
     if request.method == 'POST':
         # Check if the 'user_id' exists in the session

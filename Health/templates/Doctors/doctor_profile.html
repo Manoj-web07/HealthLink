@@ -1,16 +1,15 @@
 {% include 'Doctors/header.html' %}
 {% block content %}
     <div class="container mt-4">
-        <h2 class="mb-4">Dr. {{ doctor.name }}'s Profile</h2>
-
+        <div class="text-center">
+        <h2>Profile</h2>
+        </div>
+        <hr>
         <div class="row">
             <!-- Profile Picture Section -->
             <div class="col-md-3 text-center">
                 {% if doctor.profile_picture %}
-                    <img src="{{ doctor.profile_picture.url }}"
-                         alt="Profile Picture"
-                         class="rounded-circle img-thumbnail mb-3"
-                         width="200" height="200">
+                    <img src="{{ doctor.profile_picture.url }}" alt="Profile Picture" class="rounded-circle img-thumbnail" width="200" height="200">
                 {% else %}
                     <i class="bi bi-person-circle" style="font-size: 200px; color: #ccc;"></i>
                 {% endif %}
@@ -20,21 +19,22 @@
             <div class="col-md-9">
                 <h3>Personal Details</h3>
                 <ul class="list-group">
+                    <li class="list-group-item"><strong>Name:</strong> {{ doctor.name }}</li>
                     <li class="list-group-item"><strong>Gender:</strong> {{ doctor.get_gender_display }}</li>
                     <li class="list-group-item"><strong>Email:</strong> {{ doctor.email }}</li>
                     <li class="list-group-item"><strong>Contact Number:</strong> {{ doctor.contact_number }}</li>
                     <li class="list-group-item"><strong>Address:</strong> {{ doctor.address }}</li>
                     <li class="list-group-item"><strong>City:</strong> {{ doctor.city }}</li>
+                    <li class="list-group-item"><strong>Qualifications:</strong> {{ doctor.qualification }}</li>
+                    <li class="list-group-item"><strong>Experience:</strong> {{ doctor.experience_years }} years</li>
                 </ul>
 
                 <h3 class="mt-4">Professional Information</h3>
                 <ul class="list-group">
-                    <li class="list-group-item"><strong>{{ doctor.hospital.hospital_type }}</strong> {{ doctor.hospital.name }}</li>
                     <li class="list-group-item"><strong>Specialty:</strong> {{ doctor.specialty }}</li>
-                    <li class="list-group-item"><strong>Qualifications:</strong> {{ doctor.qualification }}</li>
-                    <li class="list-group-item"><strong>Experience:</strong> {{ doctor.experience_years }} years</li>
                     <li class="list-group-item"><strong>Treatment Type:</strong> {{ doctor.get_treatment_type_display }}</li>
                     <li class="list-group-item"><strong>Consultation Type:</strong> {{ doctor.get_consultation_type_display }}</li>
+                    <li class="list-group-item"><strong>Hospital:</strong> {{ doctor.hospital.name }} ({{ doctor.hospital.hospital_type }})</li>
                 </ul>
 
                 <h3 class="mt-4">Availability</h3>
@@ -65,25 +65,23 @@
                 <h3 class="mt-4">About</h3>
                 <p class="border p-3 rounded bg-light">{{ doctor.about }}</p>
 
-<h3 class="mt-4">Diseases Treated</h3>
-<div class="d-flex flex-row flex-wrap">
-    {% for disease in diseases %}
-        <div class="me-2 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title fs-6">{{ disease.name }}</h5>
+                <h3 class="mt-4">Diseases Treated</h3>
+                <div class="d-flex flex-row flex-wrap">
+                    {% for disease in doctor.diseases.all %}
+                        <div class="me-2 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title fs-6">{{ disease.name }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="alert alert-info">No diseases listed.</div>
+                    {% endfor %}
                 </div>
-            </div>
-        </div>
-    {% empty %}
-        <div class="alert alert-info">No diseases listed.</div>
-    {% endfor %}
-</div>
 
-
-
-                <div class="text-end mt-4 mb-2">
-                    <a href="{% url 'edit_doctor_profile' %}" class="btn btn-primary">Edit Profile</a>
+                <div class="text-end mt-4">
+                    <a href="{% url 'edit_doctor_profile'  %}" class="btn btn-primary">Edit Profile</a>
                 </div>
             </div>
         </div>

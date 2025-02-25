@@ -1,0 +1,42 @@
+{% include 'Patients/header.html' %}
+<form action="{% url 'submit_review_or_feedback' %}" method="get">
+    {% csrf_token %}
+
+    <!-- Hospital Feedback Section -->
+    <h3>Leave your Feedback for the Hospital</h3>
+    <input type="hidden" name="hospital_id" value="{{ hospital.id }}">
+    <input type="hidden" name="patient_id" value="{{ patient.id }}">
+    <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+
+    <textarea name="feedback" placeholder="Leave your feedback..."></textarea>
+
+    <label for="rating">Hospital Rating:</label>
+    <select name="rating" id="rating">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+
+    <!-- Doctor Review Section -->
+    <h3>Leave your Review for the Doctor</h3>
+    <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+    <input type="hidden" name="patient_id" value="{{ patient.id }}">
+    <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+
+    <textarea name="comment" placeholder="Leave your comment..."></textarea>
+
+    <label for="rating">Doctor Rating:</label>
+    <select name="rating" id="rating">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+
+    <!-- Submit Button for Both -->
+    <button type="submit">Submit Feedback and Review</button>
+</form>
+{% include 'Patients/footer.html' %}
