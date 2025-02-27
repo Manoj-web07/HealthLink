@@ -137,10 +137,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-if "RENDER" in os.environ:
-    ALLOWED_HOSTS.append(os.environ.get("RENDER_EXTERNAL_HOSTNAME", ""))
-    DEBUG = False
 
+ALLOWED_HOSTS = ["HealthLink-url.onrender.com", "127.0.0.1"]
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
@@ -155,4 +153,10 @@ EMAIL_HOST_USER = 'healthlink2502@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'hrwl xupl vwsk psxy'
 
 CONTACT_EMAIL = 'healthlink2502@gmail.com'
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HealthLink.settings")  # Make sure the name is correct
+
+application = get_wsgi_application()
 
