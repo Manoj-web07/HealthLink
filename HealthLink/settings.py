@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os.path
 from pathlib import Path
+import pymysql
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -159,4 +160,6 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HealthLink.settings")  # Make sure the name is correct
 
 application = get_wsgi_application()
+
+pymysql.install_as_MySQLdb()
 
