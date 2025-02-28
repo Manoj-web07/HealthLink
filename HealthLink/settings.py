@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Health'
+    'Health',
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'HealthLink.urls'
@@ -158,6 +160,7 @@ EMAIL_HOST_PASSWORD = 'hrwl xupl vwsk psxy'
 ALLOWED_HOSTS = ['healthlink-h9it.onrender.com', 'localhost', '127.0.0.1']
 DEBUG = False
 CSRF_TRUSTED_ORIGINS = ["https://healthlink-h9it.onrender.com"]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CONTACT_EMAIL = 'healthlink2502@gmail.com'
 
