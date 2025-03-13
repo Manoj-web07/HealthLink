@@ -157,9 +157,6 @@ EMAIL_USE_SSL = False  # If using SSL, set this to True and EMAIL_PORT to 465
 EMAIL_HOST_USER = 'healthlink2502@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'hrwl xupl vwsk psxy'
 
-ALLOWED_HOSTS = ['healthlink-h9it.onrender.com', 'localhost', '127.0.0.1']
-DEBUG = False
-CSRF_TRUSTED_ORIGINS = ["https://healthlink-h9it.onrender.com"]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CONTACT_EMAIL = 'healthlink2502@gmail.com'
