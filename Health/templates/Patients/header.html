@@ -172,11 +172,11 @@
                                 <li><a class="dropdown-item" href="{% url 'patient_change_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
                                 <li>
                                     <form method="POST" action="{% url 'logout' %}">
-                                        {% csrf_token %}
-                                        <button class="dropdown-item text-danger" type="submit">
-                                            <i class="bi bi-box-arrow-right"></i> Logout
-                                        </button>
-                                    </form>
+                                    {% csrf_token %}
+                                    <button class="dropdown-item text-danger " type="submit">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
+                                </form>
                                 </li>
                             </ul>
                         </div>

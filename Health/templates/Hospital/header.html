@@ -201,12 +201,12 @@
                                 <li><a class="dropdown-item {% if active_page == 'profile' %}active{% endif %}" href="{% url 'hospital-profile' hospital_id=hospital.id %}"><i class="bi bi-person"></i> Profile</a></li>
                                 <li><a class="dropdown-item {% if active_page == 'password' %}active{% endif %}" href="{% url 'change_hospital_password' %}"><i class="bi bi-key"></i> Change Password</a></li>
                                 <li>
-                                    <form method="POST" action="{% url 'logout' %}>
-                                        {% csrf_token %}
-                                        <button class="dropdown-item text-danger" type="submit">
-                                            <i class="bi bi-box-arrow-right"></i> Logout
-                                        </button>
-                                    </form>
+                                    <form method="POST" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item text-danger " type="submit">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
+                                </form>
                                 </li>
                             </ul>
                         </div>
