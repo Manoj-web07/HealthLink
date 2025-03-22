@@ -155,4 +155,6 @@ EMAIL_HOST_PASSWORD = 'hrwl xupl vwsk psxy'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CONTACT_EMAIL = 'healthlink2502@gmail.com'
+ALLOWED_HOSTS = ['healthlink-h9it.onrender.com', 'localhost', '127.0.0.1']
+
 
